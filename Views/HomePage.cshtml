@@ -1,0 +1,144 @@
+﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
+@using Umbraco.Cms.Core.Models.Blocks
+@using Umbraco.Cms.Core.Models.PublishedContent
+<link rel="stylesheet" href="/css/HomePageStyle.css"/>
+<link rel="stylesheet" href="/css/GridHomePage.css"/>
+<link rel="stylesheet" href="/css/ProgramTranstionOne.css"/>
+<link rel="stylesheet" href="/css/HomeStyle.css"/>
+
+@{
+    Layout = "master.cshtml";
+    var icons = Model.Value<IEnumerable<BlockListItem>>("IconsItems");
+    var bannerImage = Model.Value<IPublishedContent>("BannerPage");
+    var bannerUrl = bannerImage?.Url();   
+}
+
+@if (!string.IsNullOrWhiteSpace(bannerUrl))
+{
+    <div class="banner-container">
+        <img src="@bannerUrl" alt="Banner" class="banner-image" />
+    </div>
+}
+
+<div class="blue-box">
+    <div class="icon-row">
+        @if (icons != null)
+        {
+            foreach (var icon in icons)
+            {
+                var content = icon.Content;
+
+                var image = content.Value<IPublishedContent>("image");
+                var title = content.Value<string>("title");
+                //var linkPicker = content.Value<IEnumerable<Umbraco.Cms.Core.Models.Link>>("link")?.FirstOrDefault();
+
+                var imageUrl = image?.Url() ?? "/path/to/default-image.jpg"; 
+                //var href = linkPicker?.Url ?? "#";
+
+                <div class="icon-item" >
+                <a href="#">
+                    <img src="@imageUrl" alt="@title"/>
+                </a>
+                <h3>@title</h3>
+                </div>
+            }
+        }
+    </div>
+
+@{
+  var youtubeVideoId = Model.Value<string>("youtubeVideoId");
+  var programs = Model.Value<IEnumerable<IPublishedContent>>("programsGrid")?.Take(4) ?? Enumerable.Empty<IPublishedContent>();
+}
+
+<div style="display: flex; width: 100%; gap: 20px; margin-top: 80px;">
+
+    <div style="flex: 1; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 10px;">
+        @foreach (var program in programs)
+        {
+            var image = program.Value<IPublishedContent>("squareImage");
+            if (image != null)
+            {
+                <a href="@program.Url()" class="d-block program-card">
+                    <img src="@image.Url()" class="img-fluid rounded shadow-sm" style="object-fit: cover; width: 100%; height: 100%;">
+                    <div class="play-button">
+                        <i class="bi bi-play-circle-fill"></i>
+                    </div>
+                </a>
+            }
+            else
+            {
+                <div style="background-color: #eee; width: 100%; height: 150px; display: flex; align-items: center; justify-content: center;">תמונה לא נבחרה</div>
+            }
+        }
+    </div>
+
+    <div style="flex: 1;">
+        @if (!string.IsNullOrEmpty(youtubeVideoId))
+        {
+            <iframe width="100%" height="100%" src="https://www.youtube.com/embed/@(youtubeVideoId)" frameborder="0" allowfullscreen class="rounded shadow-sm"></iframe>
+        }
+    </div>
+
+</div>
+
+<div style="margin:50px;"/>
+
+@{
+    var podcasts = Model.Value<BlockListModel>("podcastGrid");
+}
+
+<div class="container my-4">
+    <div class="row g-3">
+        @if (podcasts != null)
+        {
+            foreach (var podcast in podcasts)
+            {
+                var content = podcast.Content;
+                var image = content.Value<IPublishedContent>("squareImage");
+                var imageUrl2 = image?.Url() ?? "/path/to/default-image.jpg"; 
+                var name = content.Value<string>("ProgramName");
+                var description = content.Value<string>("descriptionProgram");
+                //var linkPicker = content.Value<IEnumerable<Umbraco.Cms.Core.Models.Link>>("podcastLink")?.FirstOrDefault();
+                //var link = linkPicker?.Url ?? "#";
+
+                <div class="col-6 col-md-3 col-lg-1-5">
+                    <div class="card h-100 shadow-sm podcast-card">
+                        <a href="#" style="text-decoration:none; color:inherit;">
+                            <img src="@imageUrl2" class="card-img-top" alt="@name" style="object-fit: cover; height: 120px;">
+                            <div class="card-body text-center">
+                                <h6 class="card-title text-truncate" title="@name">@name</h6>
+                                <p class="card-text text-muted" style="font-size: 13px; max-height: 40px; overflow: hidden;">@description</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>
+
+<style>
+    @@media (min-width: 1200px) {
+        .col-lg-1-5 {
+            flex: 0 0 12.5%;
+            max-width: 12.5%;
+        }
+    }
+    .podcast-card {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .podcast-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+</style>
+
+
+
+
+</div> 
+
+
+
+
+

@@ -1,0 +1,70 @@
+body {
+      font-family: Arial, sans-serif;
+      background-color: #f8f9fa;
+      padding: 20px;
+      direction: rtl;
+    }
+    .player-container {
+      max-width: 600px;
+      margin: auto;
+      background-color: #fff;
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      border-radius: 12px;
+    }
+    .player-container img {
+      width: 100%;
+      border-radius: 12px;
+    }
+    .title {
+      font-size: 1.5em;
+      margin: 10px 0;
+      text-align: center;
+    }
+    .description {
+      font-size: 0.9em;
+      color: #555;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 15px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .controls button {
+      padding: 10px 15px;
+      background-color: #0078d7;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.2s ease-in-out;
+    }
+    .controls button:hover {
+      background-color: #005fa3;
+    }
+    .progress-container {
+      margin-top: 20px;
+      background-color: #e0e0e0;
+      height: 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      position: relative;
+    }
+    .progress-bar {
+      height: 100%;
+      background-color: #0078d7;
+      width: 0%;
+      border-radius: 4px;
+    }
+    .time-display {
+      margin-top: 10px;
+      text-align: center;
+      color: #333;
+      font-size: 0.9em;
+      direction: ltr;
+    }

@@ -1,0 +1,87 @@
+﻿@using Umbraco.Cms.Web.Common.PublishedModels;
+@using Umbraco.Cms.Core.Models.PublishedContent
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
+<link rel="stylesheet" href="/css/CategoryStyle.css"/>
+
+@{
+	Layout = "master.cshtml";
+}
+
+@using Umbraco.Cms.Core.Models.PublishedContent
+@{
+    var currentCategory = Model;
+    var programsRoot = Model.Root().DescendantsOrSelf("programs").FirstOrDefault();
+
+    IEnumerable<IPublishedContent> filteredPrograms = Enumerable.Empty<IPublishedContent>();
+
+    if (programsRoot != null)
+    {
+        var allPrograms = programsRoot.Children("programme");
+
+        filteredPrograms = allPrograms.Where(p =>
+        {
+            var category = p.Value<IPublishedContent>("category");
+            return category != null && category.Id == currentCategory.Id;
+        }).ToList();
+    }
+}
+
+@{
+    int itemsPerPage = 20;
+    int totalItems = filteredPrograms.Count();
+    int totalPages = (int)Math.Ceiling(totalItems / (double)itemsPerPage);
+
+    int currentPage = 1;
+    var pageQuery = Context.Request.Query["page"];
+    if (!string.IsNullOrEmpty(pageQuery) && int.TryParse(pageQuery, out int page))
+    {
+        currentPage = Math.Clamp(page, 1, totalPages);
+    }
+
+    var programsPage = filteredPrograms
+        .Skip((currentPage - 1) * itemsPerPage)
+        .Take(itemsPerPage)
+        .ToList();
+}
+
+<h1 class="text-center mt-2">@currentCategory.Name</h1>
+
+@if (!filteredPrograms.Any())
+{
+    <p>לא נמצאו תכניות לקטגוריה זו.</p>
+}
+else
+{
+    <div class="programs-grid">
+        @foreach(var program in filteredPrograms)
+        {
+            var img = program.Value<IPublishedContent>("squareImage");
+            var imgUrl = img != null ? img.Url() : "/path/to/placeholder.jpg";
+
+            <div class="program-card">
+                <a href="@program.Url()">
+                    <img src="@imgUrl" alt="@program.Name" />
+                    <div>@program.Name</div>
+                </a>
+            </div>
+        }
+    </div>
+}
+
+@if (totalPages > 1)
+{
+    <div class="pagination">
+        @for (int i = 1; i <= totalPages; i++)
+        {
+            if (i == currentPage)
+            {
+                <span class="current">@i</span>
+            }
+            else
+            {
+                <a href="?page=@i">@i</a>
+            }
+        }
+    </div>
+}
+

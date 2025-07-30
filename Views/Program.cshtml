@@ -1,5 +1,106 @@
-﻿@using Umbraco.Cms.Web.Common.PublishedModels;
+﻿@using System.Xml.Linq
 @inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
+
+@functions {
+    public class Episode
+    {
+        public string Title { get; set; }
+        public string PubDate { get; set; }
+        public string Image { get; set; }
+        public string AudioUrl { get; set; }
+    }
+}
+
 @{
-	Layout = null;
+    Layout = "master.cshtml";
+
+    var rssLinks = Model.Value<IEnumerable<Umbraco.Cms.Core.Models.Link>>("rssLink2");
+    var rssUrl = rssLinks?.FirstOrDefault()?.Url;
+
+    if (string.IsNullOrEmpty(rssUrl))
+    {
+        <p style="color:red;">לא הוגדר קישור RSS בעמוד זה.</p>
+        return;
+    }
+
+    int page = 1;
+    var queryPage = Context.Request.Query["page"];
+    if (!string.IsNullOrEmpty(queryPage) && int.TryParse(queryPage, out int parsed))
+    {
+        page = parsed < 1 ? 1 : parsed;
+    }
+
+    int itemsPerPage = 20;
+    List<Episode> episodes = new List<Episode>();
+
+    using (var client = new System.Net.WebClient())
+    {
+        try
+        {
+            var xml = client.DownloadString(rssUrl);
+            var doc = XDocument.Parse(xml);
+            var items = doc.Descendants("item");
+
+            episodes = items.Select(item => new Episode
+            {
+                Title = item.Element("title")?.Value,
+                PubDate = item.Element("pubDate")?.Value,
+                Image = item.Descendants().FirstOrDefault(x => x.Name.LocalName == "image")?.Attribute("href")?.Value,
+                AudioUrl = item.Element("enclosure")?.Attribute("url")?.Value
+            }).ToList();
+        }
+        catch (Exception ex)
+        {
+            <p style="color:red;">שגיאה בטעינת ה-RSS: @ex.Message</p>
+        }
+    }
+
+    var totalItems = episodes.Count;
+    var totalPages = (int)Math.Ceiling((double)totalItems / itemsPerPage);
+    var pagedEpisodes = episodes.Skip((page - 1) * itemsPerPage).Take(itemsPerPage);
+}
+
+<h1>@Model.Name</h1>
+
+@if (!pagedEpisodes.Any())
+{
+    <p>לא נמצאו פרקים להצגה.</p>
+}
+else
+{
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;">
+        @foreach (var episode in pagedEpisodes)
+        {
+            <div style="border: 1px solid #ccc; padding: 10px;">
+                @if (!string.IsNullOrEmpty(episode.Image))
+                {
+                    <img src="@episode.Image" alt="@episode.Title" style="width: 100%; height: auto;" />
+                }
+                <h4>@episode.Title</h4>
+                <p style="font-size: 0.8em; color: gray;">@episode.PubDate</p>
+            </div>
+        }
+    </div>
+
+    <div style="margin-top: 20px; text-align: center;">
+        @if (page > 1)
+        {
+            <a href="?page=@(page - 1)">« הקודם</a>
+        }
+        @for (int i = 1; i <= totalPages; i++)
+        {
+            if (i == page)
+            {
+                <span style="margin: 0 5px; font-weight: bold;">@i</span>
+            }
+            else
+            {
+                <a href="?page=@i" style="margin: 0 5px;">@i</a>
+            }
+        }
+        @if (page < totalPages)
+        {
+            <a href="?page=@(page + 1)">הבא »</a>
+        }
+    </div>
 }

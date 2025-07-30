@@ -1,0 +1,177 @@
+﻿@using Umbraco.Cms.Web.Common.PublishedModels;
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
+@{
+	Layout = null;
+}
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>נגן פרק</title>
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
+      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f8f9fa;
+      padding: 20px;
+      direction: rtl;
+    }
+    .player-container {
+      max-width: 600px;
+      margin: auto;
+      background-color: #fff;
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      border-radius: 12px;
+    }
+    .player-container img {
+      width: 100%;
+      border-radius: 12px;
+    }
+    .title {
+      font-size: 1.5em;
+      margin: 10px 0;
+      text-align: center;
+    }
+    .description {
+      font-size: 0.9em;
+      color: #555;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 15px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .controls button {
+      padding: 10px 15px;
+      background-color: #0078d7;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.2s ease-in-out;
+    }
+    .controls button:hover {
+      background-color: #005fa3;
+    }
+    .progress-container {
+      margin-top: 20px;
+      background-color: #e0e0e0;
+      height: 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      position: relative;
+    }
+    .progress-bar {
+      height: 100%;
+      background-color: #0078d7;
+      width: 0%;
+      border-radius: 4px;
+    }
+    .time-display {
+      margin-top: 10px;
+      text-align: center;
+      color: #333;
+      font-size: 0.9em;
+      direction: ltr;
+    }
+  </style>
+</head>
+<body>
+  <div class="player-container">
+    <img src="https://www.omnycontent.com/d/playlist/6dcbc33f-1fb6-49de-9ae2-ad8a00c01523/c3780081-3a16-421f-9312-ade800e42117/3a24b7a6-bf95-47e8-a64e-ade800e658f7/image.jpg?t=1748344188&size=Large" alt="תמונת פרק">
+    <div class="title">עושים צהריים | 30.06.25</div>
+    <div class="description">דנה חן</div>
+
+    <audio id="audio" src="https://traffic.omny.fm/d/clips/6dcbc33f-1fb6-49de-9ae2-ad8a00c01523/c3780081-3a16-421f-9312-ade800e42117/5c1c1c2c-9023-4e0c-9d8a-b30c00b6edc7/audio.mp3?utm_source=Podcast&in_playlist=3a24b7a6-bf95-47e8-a64e-ade800e658f7"></audio>
+
+    <div class="controls">
+  <button onclick="skip(-10)">⏪ דילוג אחורה</button>
+  <button onclick="togglePlay()" id="playBtn">▶️ הפעל</button>
+  <button onclick="skip(10)">⏩ דילוג קדימה</button>
+  <button onclick="toggleSpeed()" id="speedBtn">🔁 מהירות ×1</button>
+  <button onclick="restartAudio()">🔁 התחל מההתחלה</button>
+   </div>
+
+
+    <div class="progress-container" onclick="seek(event)">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <div class="time-display" id="timeDisplay">00:00 / 00:00</div>
+  </div>
+
+  <script>
+    const audio = document.getElementById('audio');
+    const playBtn = document.getElementById('playBtn');
+    const speedBtn = document.getElementById('speedBtn');
+    const progressBar = document.getElementById('progressBar');
+    const timeDisplay = document.getElementById('timeDisplay');
+
+    function togglePlay() {
+      if (audio.paused) {
+        audio.play();
+        playBtn.innerText = '⏸ עצור';
+      } else {
+        audio.pause();
+        playBtn.innerText = '▶️ הפעל';
+      }
+    }
+
+    function skip(seconds) {
+      audio.currentTime += seconds;
+    }
+
+    function toggleSpeed() {
+      if (audio.playbackRate === 1) {
+        audio.playbackRate = 2;
+        speedBtn.innerText = '🔁 מהירות ×2';
+      } else {
+        audio.playbackRate = 1;
+        speedBtn.innerText = '🔁 מהירות ×1';
+      }
+    }
+
+    function formatTime(seconds) {
+      const mins = Math.floor(seconds / 60);
+      const secs = Math.floor(seconds % 60);
+      return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    function updateProgress() {
+      if (!isNaN(audio.duration)) {
+        const percent = (audio.currentTime / audio.duration) * 100;
+        progressBar.style.width = percent + '%';
+        timeDisplay.innerText = `${formatTime(audio.currentTime)} / ${formatTime(audio.duration)}`;
+      }
+    }
+
+    function seek(event) {
+  const container = event.currentTarget;
+  const rect = container.getBoundingClientRect();
+  const scrollX = window.scrollX || window.pageXOffset;
+  const clickX = event.pageX - (rect.left + scrollX);
+  const width = rect.width;
+
+  const percent = Math.min(Math.max(clickX / width, 0), 1); // לוודא תחום תקני
+  audio.currentTime = percent * audio.duration;
+}
+
+function restartAudio() {
+  audio.currentTime = 0;
+  audio.play();
+  playBtn.innerText = '⏸ עצור';
+}
+
+
+    audio.addEventListener('timeupdate', updateProgress);
+
+  </script>
+</body>
+</html>

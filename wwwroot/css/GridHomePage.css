@@ -1,0 +1,76 @@
+.background {
+        background-image: url('@backgroundImage');
+        background-size: cover;
+        background-position: center;
+        width: 100%;
+        min-height: 100vh;
+        padding: 40px;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: row;
+        gap: 30px;
+    }
+    .left-column, .right-column {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: start;
+        gap: 15px;
+        color: white; /* אפשר לשנות לפי הצורך */
+    }
+    .left-column img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 8px;
+    }
+    .left-column h2 {
+        margin: 0;
+        font-size: 2em;
+    }
+    .left-column p {
+        font-size: 1.2em;
+        line-height: 1.4em;
+    }
+    .left-column a.button {
+        display: inline-block;
+        padding: 12px 25px;
+        background-color: #007acc;
+        color: white;
+        text-decoration: none;
+        border-radius: 6px;
+        font-weight: bold;
+        width: fit-content;
+        transition: background-color 0.3s ease;
+    }
+    .left-column a.button:hover {
+        background-color: #005ea2;
+    }
+
+    .right-column iframe,
+    .right-column video {
+        width: 100%;
+        height: 250px;
+        border-radius: 8px;
+    }
+    .right-column .video-title {
+        margin-top: 8px;
+        font-size: 1.1em;
+        font-weight: 600;
+        color: white;
+    }
+
+    /* התאמה למובייל */
+    @media (max-width: 768px) {
+        .background {
+            flex-direction: column;
+            padding: 20px;
+        }
+    }
+
+    .program-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.program-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
