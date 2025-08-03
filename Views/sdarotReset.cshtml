@@ -5,7 +5,7 @@
 
 <style>
     body {
-        background-color: #7393B3;
+        background-color: lightskyblue;
     }
 
     .banner-image {
@@ -23,7 +23,7 @@
     }
 
     .episode-card {
-        position: relative;
+        //border: 1px solid #ccc;
         padding: 10px;
         opacity: 0;
         transform: translateY(15px);
@@ -33,16 +33,6 @@
     .episode-card.show {
         opacity: 1;
         transform: translateY(0);
-    }
-
-    .play-button {
-        position: absolute;
-        bottom: 10px;
-        left: 10px;
-        font-size: 40px;
-        color: white;
-        z-index: 2;
-        text-decoration: none;
     }
 
     #load-more {
@@ -61,8 +51,6 @@
         public string PubDate { get; set; }
         public string Image { get; set; }
         public string AudioUrl { get; set; }
-        public string Guid { get; set; }
-        public int ProgramId { get; set; }
     }
 }
 
@@ -93,9 +81,7 @@
                 Title = item.Element("title")?.Value,
                 PubDate = item.Element("pubDate")?.Value,
                 Image = item.Descendants().FirstOrDefault(x => x.Name.LocalName == "image")?.Attribute("href")?.Value,
-                AudioUrl = item.Element("enclosure")?.Attribute("url")?.Value,
-                Guid = item.Element("guid")?.Value,
-                ProgramId = Model.Id
+                AudioUrl = item.Element("enclosure")?.Attribute("url")?.Value
             }).ToList();
         }
         catch (Exception ex)
@@ -148,9 +134,6 @@ else
                 }
                 <h4 style="text-align:right;">@episode.Title</h4>
                 <h5 style="text-align:right;">@formattedDate</h5>
-                <a href="/episode?guid=@episode.Guid&programId=@Model.Id" class="play-button">
-                  <i class="fa-solid fa-play-circle"></i>
-                </a>
             </div>
         }
     </div>
@@ -160,7 +143,7 @@ else
         <div style="text-align:center; margin-top:20px;">
             <p style="margin-bottom:5px; font-size:18px;">טען עוד</p>
             <button id="load-more">
-                <i class="fa-regular fa-circle-down"></i>
+                <i class="fa-solid fa-angle-down"></i>
             </button>
         </div>
     }
@@ -170,6 +153,7 @@ else
     const allEpisodes = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(episodes));
     let displayedCount = 8;
 
+    // אפקט אנימציה לפרקים הראשונים
     document.querySelectorAll('.episode-card').forEach((card, index) => {
         setTimeout(() => card.classList.add('show'), 50 * (index + 1));
     });
@@ -190,12 +174,11 @@ else
                 ${ep.Image ? `<img src="${ep.Image}" alt="${ep.Title}" style="width: 100%; height: auto; border-radius: 8px;" />` : ''}
                 <h4 style="text-align:right;">${ep.Title}</h4>
                 <h5 style="text-align:right;">${formattedDate}</h5>
-                <a href="/episode?guid=${ep.Guid}&programId=${ep.ProgramId}" class="play-button">
-                    <i class="fa-solid fa-play-circle"></i>
-                </a>
             `;
 
             container.appendChild(card);
+
+            // אנימציה עם עיכוב קטן
             setTimeout(() => card.classList.add('show'), 50 * (index + 1));
         });
 

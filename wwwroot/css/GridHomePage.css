@@ -16,7 +16,7 @@
         flex-direction: column;
         justify-content: start;
         gap: 15px;
-        color: white; /* אפשר לשנות לפי הצורך */
+        color: white; 
     }
     .left-column img {
         max-width: 100%;

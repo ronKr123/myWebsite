@@ -1,6 +1,8 @@
 ﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
 @using Umbraco.Cms.Core.Models.Blocks
 @using Umbraco.Cms.Core.Models.PublishedContent
+@using Umbraco.Cms.Web.Common.PublishedModels
+
 <link rel="stylesheet" href="/css/HomePageStyle.css"/>
 <link rel="stylesheet" href="/css/GridHomePage.css"/>
 <link rel="stylesheet" href="/css/ProgramTranstionOne.css"/>
@@ -30,16 +32,30 @@
 
                 var image = content.Value<IPublishedContent>("image");
                 var title = content.Value<string>("title");
-                //var linkPicker = content.Value<IEnumerable<Umbraco.Cms.Core.Models.Link>>("link")?.FirstOrDefault();
+                
+                // קודם ננסה להביא Multi URL Picker
+                var links = content.Value<IEnumerable<Umbraco.Cms.Core.Models.Link>>("link");
+                
+                // אם אין Multi URL Picker ננסה להביא URL Picker בודד
+                var singleLink = content.Value<Umbraco.Cms.Core.Models.Link>("link");
 
-                var imageUrl = image?.Url() ?? "/path/to/default-image.jpg"; 
-                //var href = linkPicker?.Url ?? "#";
+                var imageUrl = image?.Url() ?? "/path/to/default-image.jpg";
+                var href = "#";
 
-                <div class="icon-item" >
-                <a href="#">
-                    <img src="@imageUrl" alt="@title"/>
-                </a>
-                <h3>@title</h3>
+                if (links != null && links.Any())
+                {
+                    href = links.First().Url;
+                }
+                else if (singleLink != null)
+                {
+                    href = singleLink.Url;
+                }
+
+                <div class="icon-item">
+                    <a href="@href">
+                        <img src="@imageUrl" alt="@title"/>
+                    </a>
+                    <h3>@title</h3>
                 </div>
             }
         }
@@ -84,38 +100,32 @@
 <div style="margin:50px;"/>
 
 @{
-    var podcasts = Model.Value<BlockListModel>("podcastGrid");
+    var podcasts = Model.Value<IEnumerable<IPublishedContent>>("podcastGrid");
 }
 
-<div class="container my-4">
-    <div class="row g-3">
-        @if (podcasts != null)
-        {
-            foreach (var podcast in podcasts)
-            {
-                var content = podcast.Content;
-                var image = content.Value<IPublishedContent>("squareImage");
-                var imageUrl2 = image?.Url() ?? "/path/to/default-image.jpg"; 
-                var name = content.Value<string>("ProgramName");
-                var description = content.Value<string>("descriptionProgram");
-                //var linkPicker = content.Value<IEnumerable<Umbraco.Cms.Core.Models.Link>>("podcastLink")?.FirstOrDefault();
-                //var link = linkPicker?.Url ?? "#";
+@if (podcasts != null)
+{
+    foreach (var podcast in podcasts)
+    {
+        var image = podcast.Value<IPublishedContent>("squareImage");
+        var imageUrl = image?.Url() ?? "/path/to/default-image.jpg";
+        var name = podcast.Value<string>("ProgramName");
+        var description = podcast.Value<string>("descriptionProgram");
 
-                <div class="col-6 col-md-3 col-lg-1-5">
-                    <div class="card h-100 shadow-sm podcast-card">
-                        <a href="#" style="text-decoration:none; color:inherit;">
-                            <img src="@imageUrl2" class="card-img-top" alt="@name" style="object-fit: cover; height: 120px;">
-                            <div class="card-body text-center">
-                                <h6 class="card-title text-truncate" title="@name">@name</h6>
-                                <p class="card-text text-muted" style="font-size: 13px; max-height: 40px; overflow: hidden;">@description</p>
-                            </div>
-                        </a>
+        <div class="col-6 col-md-3 col-lg-1-5">
+            <div class="card h-100 shadow-sm podcast-card">
+                <a href="#" style="text-decoration:none; color:inherit;">
+                    <img src="@imageUrl" class="card-img-top" alt="@name" style="object-fit: cover; height: 120px;">
+                    <div class="card-body text-center">
+                        <h6 class="card-title text-truncate" title="@name">@name</h6>
+                        <p class="card-text text-muted" style="font-size: 13px; max-height: 40px; overflow: hidden;">@description</p>
                     </div>
-                </div>
-            }
-        }
-    </div>
-</div>
+                </a>
+            </div>
+        </div>
+    }
+}
+
 
 <style>
     @@media (min-width: 1200px) {

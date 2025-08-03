@@ -1,177 +1,225 @@
-﻿@using Umbraco.Cms.Web.Common.PublishedModels;
+﻿@using System.Xml.Linq
 @inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
-@{
-	Layout = null;
-}
-<!DOCTYPE html>
-<html lang="he" dir="rtl">
-<head>
-  <meta charset="UTF-8">
-  <title>נגן פרק</title>
-      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
-      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
-  <style>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
     body {
-      font-family: Arial, sans-serif;
-      background-color: #f8f9fa;
-      padding: 20px;
-      direction: rtl;
+        background-color: #7393B3;
     }
-    .player-container {
-      max-width: 600px;
-      margin: auto;
-      background-color: #fff;
-      padding: 20px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      border-radius: 12px;
-    }
-    .player-container img {
-      width: 100%;
-      border-radius: 12px;
-    }
-    .title {
-      font-size: 1.5em;
-      margin: 10px 0;
-      text-align: center;
-    }
-    .description {
-      font-size: 0.9em;
-      color: #555;
-      margin-bottom: 20px;
-      text-align: center;
-    }
-    .controls {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 15px;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-    .controls button {
-      padding: 10px 15px;
-      background-color: #0078d7;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: background-color 0.2s ease-in-out;
-    }
-    .controls button:hover {
-      background-color: #005fa3;
-    }
-    .progress-container {
-      margin-top: 20px;
-      background-color: #e0e0e0;
-      height: 8px;
-      border-radius: 4px;
-      cursor: pointer;
-      position: relative;
-    }
-    .progress-bar {
-      height: 100%;
-      background-color: #0078d7;
-      width: 0%;
-      border-radius: 4px;
-    }
-    .time-display {
-      margin-top: 10px;
-      text-align: center;
-      color: #333;
-      font-size: 0.9em;
-      direction: ltr;
-    }
-  </style>
-</head>
-<body>
-  <div class="player-container">
-    <img src="https://www.omnycontent.com/d/playlist/6dcbc33f-1fb6-49de-9ae2-ad8a00c01523/c3780081-3a16-421f-9312-ade800e42117/3a24b7a6-bf95-47e8-a64e-ade800e658f7/image.jpg?t=1748344188&size=Large" alt="תמונת פרק">
-    <div class="title">עושים צהריים | 30.06.25</div>
-    <div class="description">דנה חן</div>
 
-    <audio id="audio" src="https://traffic.omny.fm/d/clips/6dcbc33f-1fb6-49de-9ae2-ad8a00c01523/c3780081-3a16-421f-9312-ade800e42117/5c1c1c2c-9023-4e0c-9d8a-b30c00b6edc7/audio.mp3?utm_source=Podcast&in_playlist=3a24b7a6-bf95-47e8-a64e-ade800e658f7"></audio>
+    .episode-container {
+        text-align: center;
+        margin: 20px auto;
+        max-width: 800px;
+    }
 
-    <div class="controls">
-  <button onclick="skip(-10)">⏪ דילוג אחורה</button>
-  <button onclick="togglePlay()" id="playBtn">▶️ הפעל</button>
-  <button onclick="skip(10)">⏩ דילוג קדימה</button>
-  <button onclick="toggleSpeed()" id="speedBtn">🔁 מהירות ×1</button>
-  <button onclick="restartAudio()">🔁 התחל מההתחלה</button>
-   </div>
+    .episode-image {
+        max-width: 400px;
+        display: block;
+        margin: 20px auto;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
 
+    .episode-description {
+        margin-top: 20px;
+        text-align: right;
+        direction: rtl;
+        font-size: 18px;
+    }
 
-    <div class="progress-container" onclick="seek(event)">
-      <div class="progress-bar" id="progressBar"></div>
+    .nav-buttons {
+        margin-top: 20px;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .nav-buttons a {
+        font-size: 16px;
+        color: blue;
+        text-decoration: none;
+    }
+
+    .program-link {
+        display: block;
+        margin-top: 20px;
+        font-size: 16px;
+        color: blue;
+        text-decoration: none;
+    }
+
+    .more-episodes {
+        margin-top: 40px;
+    }
+
+    .episode-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+        margin-top: 10px;
+    }
+
+    .episode-card {
+        border: 1px solid #ccc;
+        padding: 10px;
+        position: relative;
+        border-radius: 8px;
+        background: white;
+    }
+
+    .episode-card img {
+        width: 100%;
+        border-radius: 8px;
+    }
+
+    .play-button {
+        position: absolute;
+        bottom: 10px;
+        left: 10px;
+        font-size: 40px;
+        color: white;
+        text-decoration: none;
+    }
+</style>
+
+@functions {
+    public class Episode
+    {
+        public string Title { get; set; }
+        public string PubDate { get; set; }
+        public string Image { get; set; }
+        public string AudioUrl { get; set; }
+        public string Description { get; set; }
+        public string Guid { get; set; }
+    }
+}
+
+@{
+    Layout = "master.cshtml";
+
+    // קבלת פרמטרים מה-QueryString
+    var guid = Context.Request.Query["guid"].ToString();
+    var programIdStr = Context.Request.Query["programId"].ToString();
+
+    if (!int.TryParse(programIdStr, out int programId))
+    {
+        <p style="color:red;">לא התקבל מזהה תוכנית תקין ב-URL.</p>
+        return;
+    }
+
+    var programPage = Umbraco.Content(programId);
+    if (programPage == null)
+    {
+        <p style="color:red;">לא נמצא עמוד תוכנית עם מזהה זה.</p>
+        return;
+    }
+
+    var rssLinks = programPage.Value<IEnumerable<Umbraco.Cms.Core.Models.Link>>("rssLink2");
+    var rssUrl = rssLinks?.FirstOrDefault()?.Url;
+
+    if (string.IsNullOrEmpty(rssUrl))
+    {
+        <p style="color:red;">לא הוגדר קישור RSS בעמוד התוכנית.</p>
+        return;
+    }
+
+    List<Episode> episodes = new List<Episode>();
+    try
+    {
+        using (var client = new System.Net.WebClient())
+        {
+            var xml = client.DownloadString(rssUrl);
+            var doc = XDocument.Parse(xml);
+            var items = doc.Descendants("item");
+
+            episodes = items.Select(item => new Episode
+            {
+                Title = item.Element("title")?.Value,
+                PubDate = item.Element("pubDate")?.Value,
+                Image = item.Descendants().FirstOrDefault(x => x.Name.LocalName == "image")?.Attribute("href")?.Value,
+                AudioUrl = item.Element("enclosure")?.Attribute("url")?.Value,
+                Description = item.Element("description")?.Value,
+                Guid = item.Element("guid")?.Value
+            }).ToList();
+        }
+    }
+    catch (Exception ex)
+    {
+        <p style="color:red;">שגיאה בטעינת ה-RSS: @ex.Message</p>
+        return;
+    }
+
+    var episodeIndex = episodes.FindIndex(e => e.Guid == guid);
+    if (episodeIndex == -1)
+    {
+        <p style="color:red;">פרק לא נמצא.</p>
+        return;
+    }
+
+    var episode = episodes[episodeIndex];
+    var previousEpisode = episodeIndex > 0 ? episodes[episodeIndex - 1] : null;
+    var nextEpisode = episodeIndex < episodes.Count - 1 ? episodes[episodeIndex + 1] : null;
+}
+
+<div class="episode-container">
+    <h1>@episode.Title</h1>
+    <p>@episode.PubDate</p>
+
+    @if (!string.IsNullOrEmpty(episode.Image))
+    {
+        <img src="@episode.Image" alt="@episode.Title" class="episode-image" />
+    }
+
+    <div class="episode-description">
+        @Html.Raw(episode.Description)
     </div>
 
-    <div class="time-display" id="timeDisplay">00:00 / 00:00</div>
-  </div>
-
-  <script>
-    const audio = document.getElementById('audio');
-    const playBtn = document.getElementById('playBtn');
-    const speedBtn = document.getElementById('speedBtn');
-    const progressBar = document.getElementById('progressBar');
-    const timeDisplay = document.getElementById('timeDisplay');
-
-    function togglePlay() {
-      if (audio.paused) {
-        audio.play();
-        playBtn.innerText = '⏸ עצור';
-      } else {
-        audio.pause();
-        playBtn.innerText = '▶️ הפעל';
-      }
+    @if (!string.IsNullOrEmpty(episode.AudioUrl))
+    {
+        <audio controls style="margin-top: 20px; width: 100%;">
+            <source src="@episode.AudioUrl" type="audio/mpeg" />
+            הדפדפן שלך לא תומך בהשמעת אודיו.
+        </audio>
     }
 
-    function skip(seconds) {
-      audio.currentTime += seconds;
-    }
+    <div class="nav-buttons">
+        @if (previousEpisode != null)
+        {
+            <a href="/episode?guid=@previousEpisode.Guid&programId=@programPage.Id">« פרק קודם</a>
+        }
+        else { <span></span> }
 
-    function toggleSpeed() {
-      if (audio.playbackRate === 1) {
-        audio.playbackRate = 2;
-        speedBtn.innerText = '🔁 מהירות ×2';
-      } else {
-        audio.playbackRate = 1;
-        speedBtn.innerText = '🔁 מהירות ×1';
-      }
-    }
+        @if (nextEpisode != null)
+        {
+            <a href="/episode?guid=@nextEpisode.Guid&programId=@programPage.Id">פרק הבא »</a>
+        }
+    </div>
 
-    function formatTime(seconds) {
-      const mins = Math.floor(seconds / 60);
-      const secs = Math.floor(seconds % 60);
-      return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-    }
+    <a href="@programPage.Url()" class="program-link">← חזרה לעמוד התוכנית</a>
 
-    function updateProgress() {
-      if (!isNaN(audio.duration)) {
-        const percent = (audio.currentTime / audio.duration) * 100;
-        progressBar.style.width = percent + '%';
-        timeDisplay.innerText = `${formatTime(audio.currentTime)} / ${formatTime(audio.duration)}`;
-      }
-    }
+</div>
 
-    function seek(event) {
-  const container = event.currentTarget;
-  const rect = container.getBoundingClientRect();
-  const scrollX = window.scrollX || window.pageXOffset;
-  const clickX = event.pageX - (rect.left + scrollX);
-  const width = rect.width;
+<div class="more-episodes">
+    <h3 style="text-align:right; direction:rtl;">פרקים נוספים מהתוכנית:</h3>
+    <div class="episode-grid">
+        @foreach (var ep in episodes.Where(e => e.Guid != episode.Guid).Take(4))
+        {
+            var pubDate = DateTime.TryParse(ep.PubDate, out var date)
+                ? date.ToString("dd.MM.yy")
+                : ep.PubDate;
 
-  const percent = Math.min(Math.max(clickX / width, 0), 1); // לוודא תחום תקני
-  audio.currentTime = percent * audio.duration;
-}
-
-function restartAudio() {
-  audio.currentTime = 0;
-  audio.play();
-  playBtn.innerText = '⏸ עצור';
-}
-
-
-    audio.addEventListener('timeupdate', updateProgress);
-
-  </script>
-</body>
-</html>
+            <div class="episode-card">
+                @if (!string.IsNullOrEmpty(ep.Image))
+                {
+                    <img src="@ep.Image" alt="@ep.Title" />
+                }
+                <h4 style="text-align:right;">@ep.Title</h4>
+                <h5 style="text-align:right;">@pubDate</h5>
+                <a href="/episode?guid=@ep.Guid&programId=@programPage.Id" class="play-button">
+                    <i class="fa-solid fa-play-circle"></i>
+                </a>
+            </div>
+        }
+    </div>
+</div>
