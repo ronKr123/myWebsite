@@ -1,19 +1,17 @@
-body{
-    background-color: lightskyblue;
+body {
+    background-color: lightblue;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    
 }
-
+    
 .programs-grid {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 15px;
-    }
-
-    .program-card {
-        background-color: #222;
-        padding: 10px;
-        border-radius: 8px;
-        color: white;
-        text-align: center;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 40px;
+    padding: 20px;
+    background-color: lightblue;
     }
 
     .program-card img {
@@ -42,3 +40,9 @@ body{
         background-color: #005ea2;
         font-weight: bold;
     }
+
+    .category-title {
+    padding: 10px;
+    border-radius: 6px;
+    text-align: center;
+}

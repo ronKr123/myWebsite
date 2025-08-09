@@ -5,7 +5,14 @@
 
 <style>
     body {
-        background-color: #7393B3;
+        margin: 0;
+        padding: 0;
+        height: 100vh;
+        background-image: url('/media/oqbnvw4h/backimg.png');
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-attachment: fixed;
     }
 
     .episode-container {
@@ -98,7 +105,6 @@
 @{
     Layout = "master.cshtml";
 
-    // קבלת פרמטרים מה-QueryString
     var guid = Context.Request.Query["guid"].ToString();
     var programIdStr = Context.Request.Query["programId"].ToString();
 

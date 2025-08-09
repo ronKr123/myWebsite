@@ -1,8 +1,13 @@
 ﻿@using Umbraco.Cms.Web.Common.PublishedModels;
-@using Umbraco.Cms.Core.Models.PublishedContent
+@using Umbraco.Cms.Core.Models.PublishedContent;
+@using Umbraco.Cms.Core.Models;
 @inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
 
-<link rel="stylesheet" href="/css/CategoryStyle.css"/>
+<link rel="stylesheet" href="/css/CategoryStyle.css" />
+
+<head>
+    <title>@Model.Name</title>
+</head>
 
 @{
     Layout = "master.cshtml";
@@ -10,51 +15,17 @@
     var currentCategory = Model;
     var programsRoot = Model.Root().DescendantsOrSelf("programs").FirstOrDefault();
 
-    List<string> debugMessages = new();
     IEnumerable<IPublishedContent> filteredPrograms = Enumerable.Empty<IPublishedContent>();
 
-    if (programsRoot == null)
+    if (programsRoot != null)
     {
-        debugMessages.Add("❌ לא נמצא nodes בשם 'programs'. ודא שקיים Node כזה בעץ התוכן.");
-    }
-    else
-    {
-        var allPrograms = Model.Root().DescendantsOfType("programs").ToList();
+        var allPrograms = programsRoot.DescendantsOfType("program").ToList();
 
-        if (!allPrograms.Any())
+        filteredPrograms = allPrograms.Where(p =>
         {
-            debugMessages.Add("❌ לא נמצאו תכניות תחת 'programs'.");
-        }
-        else
-        {
-            // הדפסת כל התכניות והקטגוריות שלהן (ברשימת ה-Multi Picker)
-            foreach (var p in allPrograms)
-            {
-                // Multi Picker מחזיר רשימה של IPublishedContent
-                var categories = p.Value<IEnumerable<IPublishedContent>>("Category");
-                if (categories != null && categories.Any())
-                {
-                    var catNames = string.Join(", ", categories.Select(c => $"{c.Name} (ID: {c.Id})"));
-                    debugMessages.Add($"תוכנית: {p.Name} | קטגוריות מקושרות: {catNames}");
-                }
-                else
-                {
-                    debugMessages.Add($"תוכנית: {p.Name} | אין קטגוריה");
-                }
-            }
-
-            // סינון לפי קטגוריה נוכחית - תכניות שיש להן לפחות קטגוריה אחת שמתאימה לקטגוריה הנוכחית
-            filteredPrograms = allPrograms.Where(p =>
-            {
-                var categories = p.Value<IEnumerable<IPublishedContent>>("Category");
-                return categories != null && categories.Any(c => c.Id == currentCategory.Id);
-            }).ToList();
-
-            if (!filteredPrograms.Any())
-            {
-                debugMessages.Add($"❌ לא נמצאו תכניות עם קטגוריה תואמת (קטגוריה נוכחית: {currentCategory.Name}, ID: {currentCategory.Id}).");
-            }
-        }
+            var categories = p.Value<IEnumerable<Link>>("category");
+            return categories != null && categories.Any(c => c.Url == currentCategory.Url());
+        }).ToList();
     }
 
     int itemsPerPage = 20;
@@ -69,32 +40,21 @@
     }
 
     var programsPage = filteredPrograms
-        .Skip((currentPage - 1) * itemsPerPage)
-        .Take(itemsPerPage)
-        .ToList();
+    .Skip((currentPage - 1) * itemsPerPage)
+    .Take(itemsPerPage)
+    .ToList();
 }
-
-<h1 class="text-center mt-2">@currentCategory.Name</h1>
-
-<!-- הדפסות דיבאג -->
-<div style="background:#f3f3f3; border:1px solid #ccc; padding:10px; margin-bottom:15px;">
-    <h4>Debug Info:</h4>
-    <ul>
-        @foreach (var msg in debugMessages)
-        {
-            <li>@msg</li>
-        }
-    </ul>
-</div>
 
 @if (!programsPage.Any())
 {
+    <h1 class="text-center mt-2">@currentCategory.Name</h1>
     <p>לא נמצאו תכניות לקטגוריה זו.</p>
 }
 else
 {
+    <h1 class="category-title text-center mt-2">@currentCategory.Name</h1>
     <div class="programs-grid">
-        @foreach(var program in programsPage)
+        @foreach (var program in programsPage)
         {
             var img = program.Value<IPublishedContent>("squareImage");
             var imgUrl = img != null ? img.Url() : "/path/to/placeholder.jpg";

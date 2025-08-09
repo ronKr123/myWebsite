@@ -5,29 +5,102 @@
 
 <style>
     body {
-        background-color: #7393B3;
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+        background-color: #fff;
+        color: #333;
+        /* background-image: url('/media/oqbnvw4h/backimg.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-attachment: fixed; */
+    }
+
+    .banner-container {
+        position: relative;
+        width: 100%;
+        height: 400px;
     }
 
     .banner-image {
         width: 100%;
-        height: 50%;
+        height: 100%;
         object-fit: cover;
-        border-radius: 2px;
-        box-shadow: 10px 8px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .program-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin: 20px;
+        direction: rtl;
+    }
+
+    .program-title {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .program-title h1 {
+        margin: 0;
+        font-size: 32px;
+        font-weight: bold;
+    }
+
+    .share-btn {
+        font-size: 24px;
+        cursor: pointer;
+        color: #333;
+    }
+
+    .spotify-section {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .spotify-qr {
+        width: 60px;
+        height: 60px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+        background-size: cover;
+        background-position: center;
+    }
+
+    .spotify-text {
+        font-size: 14px;
+        color: #333;
     }
 
     .richtext-container {
         text-align: right;
-        white-space: normal;
-        word-wrap: break-word;
+        direction: rtl;
+        margin: 0 20px 30px 20px;
+        font-size: 18px;
+        color: #444;
+    }
+
+    .episode-list {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        margin: 0 20px;
     }
 
     .episode-card {
-        position: relative;
-        padding: 10px;
+        display: flex;
+        align-items: center;
+        flex-direction: row-reverse;
+        justify-content: space-between;
+        border-bottom: 1px solid #ddd;
+        padding: 15px 0;
         opacity: 0;
         transform: translateY(15px);
-        transition: opacity 0.5s ease, transform 0.5s ease;
+        transition: opacity 0.5s ease, transform 0.5s ease; 
     }
 
     .episode-card.show {
@@ -35,35 +108,129 @@
         transform: translateY(0);
     }
 
+    .episode-image-container {
+        position: relative;
+        width: 200px;
+        height: 200px;
+        flex-shrink: 0;
+        border-radius: 5px;
+        overflow: hidden;
+        margin-left: 15px;
+    }
+
+    .episode-image-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
     .play-button {
         position: absolute;
-        bottom: 10px;
-        left: 10px;
-        font-size: 40px;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 50px;
         color: white;
-        z-index: 2;
+        background: rgba(0, 0, 0, 0.6);
+        border-radius: 50%;
+        padding: 5px;
         text-decoration: none;
     }
 
-    #load-more {
-        background: none;
-        border: none;
-        cursor: pointer;
-        font-size: 24px;
-        color: blue;
+    .episode-info {
+        flex: 1;
+        text-align: right;
+        direction: rtl;
+        margin-right: 10px;
     }
+
+    .episode-info h4 {
+        margin: 0;
+        font-size: 30px;
+        font-weight: bold;
+    }
+
+    .episode-info p.description {
+        margin: 5px 0;
+        font-size: 20px;
+        color: #666;
+    }
+
+    .episode-info .date {
+        font-size: 15px;
+        color: #aaa;
+    }
+
+  #load-more {
+    background-color: transparent;
+    color: black;
+    font-size: 30px;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    margin: 40px auto;
+    text-align: center;
+}
+
+#load-more i {
+    font-size: 20px;
+    background-color: #092782;
+    border-radius: 50%;
+    padding: 12px;
+    color: #ffe666;
+    transition: background 0.3s ease;
+}
+
+#load-more:hover i {
+    background-color: #001f66;
+}
+
+hr {
+    border: none;
+    height: 4px;
+    background: linear-gradient(to right, #092782, #ffe666);
+    margin: 40px auto;
+    width: 80%;
+    border-radius: 2px;
+}
+
+}
+
 </style>
 
 @functions {
     public class Episode
     {
         public string Title { get; set; }
+        public string Description { get; set; }
         public string PubDate { get; set; }
         public string Image { get; set; }
         public string AudioUrl { get; set; }
         public string Guid { get; set; }
         public int ProgramId { get; set; }
     }
+
+    public string CleanDescription(string html)
+    {
+        if (string.IsNullOrEmpty(html)) return "";
+        var plain = System.Text.RegularExpressions.Regex.Replace(html, "<.*?>", ""); // הסרת HTML
+        var firstLine = plain.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None).FirstOrDefault() ?? plain;
+        return firstLine.Length > 100 ? firstLine.Substring(0, 100) + "..." : firstLine;
+    }
+
+    public string FormatDescription(string html)
+    {
+        if (string.IsNullOrEmpty(html)) return "";
+
+        var plain = System.Text.RegularExpressions.Regex.Replace(html, "<.*?>", ""); // הסרת HTML
+        var sentences = plain.Split(new[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
+
+        return string.Join(".<br>", sentences.Select(s => s.Trim())) + ".";
+    }
+
 }
 
 @{
@@ -78,6 +245,8 @@
         return;
     }
 
+    
+
     List<Episode> episodes = new List<Episode>();
 
     using (var client = new System.Net.WebClient())
@@ -91,6 +260,7 @@
             episodes = items.Select(item => new Episode
             {
                 Title = item.Element("title")?.Value,
+                Description = CleanDescription(item.Element("description")?.Value),
                 PubDate = item.Element("pubDate")?.Value,
                 Image = item.Descendants().FirstOrDefault(x => x.Name.LocalName == "image")?.Attribute("href")?.Value,
                 AudioUrl = item.Element("enclosure")?.Attribute("url")?.Value,
@@ -117,13 +287,17 @@
     </div>
 }
 
-<h1 class="m-3" style="text-align: right;">@Model.Name</h1>
-
-<div class="m-3 richtext-container" style="text-align:right; direction: rtl">
-    @dis
+<div class="program-header">
+    <div class="program-title">
+        <h1>@Model.Name</h1>
+    </div>
 </div>
 
-<h1 style="text-align: right; direction: rtl" class="m-3">התכניות האחרונות ששודרו :</h1>
+<div class="m-3 richtext-container">
+    @Html.Raw(FormatDescription(@dis))
+</div>
+
+<hr>
 
 @if (!episodes.Any())
 {
@@ -131,8 +305,7 @@
 }
 else
 {
-    <div id="episodes-container"
-         style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;">
+    <div class="episode-list" id="episodes-container">
         @foreach (var episode in episodes.Take(8))
         {
             var dateString = episode.PubDate;
@@ -142,27 +315,30 @@ else
                 : dateString;
 
             <div class="episode-card">
-                @if (!string.IsNullOrEmpty(episode.Image))
-                {
-                    <img src="@episode.Image" alt="@episode.Title" style="width: 100%; height: auto; border-radius: 8px;" />
-                }
-                <h4 style="text-align:right;">@episode.Title</h4>
-                <h5 style="text-align:right;">@formattedDate</h5>
-                <a href="/episode?guid=@episode.Guid&programId=@Model.Id" class="play-button">
-                  <i class="fa-solid fa-play-circle"></i>
-                </a>
+                <div class="episode-image-container">
+                    @if (!string.IsNullOrEmpty(episode.Image))
+                    {
+                        <img src="@episode.Image" alt="@episode.Title" />
+                    }
+                    <a href="/episode?guid=@episode.Guid&programId=@Model.Id" class="play-button">
+                        <i class="fa-solid fa-circle-play"></i>
+                    </a>
+                </div>
+                <div class="episode-info">
+                    <h4>@episode.Title</h4>
+                    <p class="description" style="direction:rtl;">@episode.Description</p>
+                    <p class="date">@formattedDate</p>
+                </div>
             </div>
         }
     </div>
 
     @if (episodes.Count > 8)
     {
-        <div style="text-align:center; margin-top:20px;">
-            <p style="margin-bottom:5px; font-size:18px;">טען עוד</p>
-            <button id="load-more">
-                <i class="fa-regular fa-circle-down"></i>
-            </button>
-        </div>
+        <button id="load-more">
+              טען עוד
+            <i class="fa-solid fa-chevron-down"></i>
+        </button>
     }
 }
 
@@ -174,35 +350,47 @@ else
         setTimeout(() => card.classList.add('show'), 50 * (index + 1));
     });
 
-    document.getElementById('load-more')?.addEventListener('click', function () {
-        const container = document.getElementById('episodes-container');
-        const nextEpisodes = allEpisodes.slice(displayedCount, displayedCount + 8);
+    const loadMoreButton = document.getElementById('load-more');
 
-        nextEpisodes.forEach((ep, index) => {
-            const pubDate = new Date(ep.PubDate);
-            const formattedDate = !isNaN(pubDate)
-                ? pubDate.toLocaleDateString('he-IL')
-                : ep.PubDate;
+    if (!loadMoreButton || allEpisodes.length <= displayedCount) {
+        if (loadMoreButton) loadMoreButton.style.display = 'none';
+    } else {
+        loadMoreButton.addEventListener('click', function () {
+            const container = document.getElementById('episodes-container');
+            const nextEpisodes = allEpisodes.slice(displayedCount, displayedCount + 8);
 
-            const card = document.createElement('div');
-            card.classList.add('episode-card');
-            card.innerHTML = `
-                ${ep.Image ? `<img src="${ep.Image}" alt="${ep.Title}" style="width: 100%; height: auto; border-radius: 8px;" />` : ''}
-                <h4 style="text-align:right;">${ep.Title}</h4>
-                <h5 style="text-align:right;">${formattedDate}</h5>
-                <a href="/episode?guid=${ep.Guid}&programId=${ep.ProgramId}" class="play-button">
-                    <i class="fa-solid fa-play-circle"></i>
-                </a>
-            `;
+            nextEpisodes.forEach((ep, index) => {
+                const pubDate = new Date(ep.PubDate);
+                const formattedDate = !isNaN(pubDate)
+                    ? pubDate.toLocaleDateString('he-IL')
+                    : ep.PubDate;
 
-            container.appendChild(card);
-            setTimeout(() => card.classList.add('show'), 50 * (index + 1));
+                const card = document.createElement('div');
+                card.classList.add('episode-card');
+                card.innerHTML = `
+                    <div class="episode-image-container">
+                        ${ep.Image ? `<img src="${ep.Image}" alt="${ep.Title}" />` : ''}
+                        <a href="/episode?guid=${ep.Guid}&programId=${ep.ProgramId}" class="play-button">
+                           <i class="fa-solid fa-circle-play"></i>
+                        </a>
+                    </div>
+                    <div class="episode-info">
+                        <h4>${ep.Title}</h4>
+                        <p class="description">${ep.Description || ''}</p>
+                        <p class="date">${formattedDate}</p>
+                    </div>
+                `;
+
+                container.appendChild(card);
+                setTimeout(() => card.classList.add('show'), 50 * (index + 1));
+            });
+
+            displayedCount += 8;
+
+            if (displayedCount >= allEpisodes.length) {
+                loadMoreButton.style.display = 'none';
+            }
         });
+    }
 
-        displayedCount += 8;
-
-        if (displayedCount >= allEpisodes.length) {
-            document.getElementById('load-more').style.display = 'none';
-        }
-    });
 </script>

@@ -1,0 +1,131 @@
+﻿@using Umbraco.Cms.Web.Common.PublishedModels;
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
+@{
+	Layout = "master.cshtml";
+}
+
+<h1 class="text-center">חיפוש</h1>
+
+
+<section class="search-section">
+    <input type="text" id="searchInput" placeholder=" ...חפש תוכנית או פרק" />
+    <div id="resultsContainer" class="results-list"></div>
+</section>
+
+<style>
+    .search-section {
+        padding: 20px;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    #searchInput {
+		text-align: right;
+        width: 100%;
+        padding: 12px;
+        font-size: 16px;
+        margin-bottom: 20px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+    }
+
+    .results-list {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .result-item {
+        display: flex;
+        align-items: center;
+        background: #222;
+        color: white;
+        border-radius: 8px;
+        padding: 10px;
+        cursor: pointer;
+        transition: transform 0.2s;
+    }
+
+    .result-item:hover {
+        transform: scale(1.02);
+    }
+
+    .result-item img {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 5px;
+        margin-left: 10px;
+    }
+
+    .result-details {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .result-details h3 {
+        margin: 0;
+        font-size: 18px;
+    }
+
+    .result-details p {
+        margin: 0;
+        font-size: 14px;
+        color: #aaa;
+    }
+
+    .highlight {
+        background: yellow;
+        color: black;
+    }
+</style>
+
+<script>
+    const searchInput = document.getElementById('searchInput');
+    const resultsContainer = document.getElementById('resultsContainer');
+
+    function highlightText(text, query) {
+        const regex = new RegExp(`(${query})`, 'gi');
+        return text.replace(regex, '<span class="highlight">$1</span>');
+    }
+
+    searchInput.addEventListener('input', async () => {
+        const query = searchInput.value.trim();
+        if (!query) {
+            resultsContainer.innerHTML = "";
+            return;
+        }
+
+        const response = await fetch(`/umbraco/api/Search/Search?query=${encodeURIComponent(query)}`);
+        const results = await response.json();
+
+        resultsContainer.innerHTML = "";
+
+        results.forEach(result => {
+            const div = document.createElement('div');
+            div.className = "result-item";
+
+            if (result.Type === "program") {
+                div.innerHTML = `
+                    <img src="${result.Banner}" alt="${result.Name}" />
+                    <div class="result-details">
+                        <h3>${highlightText(result.Name, query)}</h3>
+                    </div>
+                `;
+                div.addEventListener('click', () => window.location.href = result.Url);
+            }
+            else if (result.Type === "episode") {
+                div.innerHTML = `
+                    <img src="${result.Image}" alt="${result.EpisodeName}" />
+                    <div class="result-details">
+                        <h3>${highlightText(result.EpisodeName, query)}</h3>
+                        <p>${result.ProgramName}</p>
+                    </div>
+                `;
+                div.addEventListener('click', () => window.location.href = result.Url);
+            }
+
+            resultsContainer.appendChild(div);
+        });
+    });
+</script>

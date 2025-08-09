@@ -4,9 +4,9 @@
 @using Umbraco.Cms.Web.Common.PublishedModels
 
 <link rel="stylesheet" href="/css/HomePageStyle.css"/>
-<link rel="stylesheet" href="/css/GridHomePage.css"/>
-<link rel="stylesheet" href="/css/ProgramTranstionOne.css"/>
 <link rel="stylesheet" href="/css/HomeStyle.css"/>
+<link rel="stylesheet" href="/css/podcastGridStyle.css"/> 
+
 
 @{
     Layout = "master.cshtml";
@@ -22,7 +22,9 @@
     </div>
 }
 
+
 <div class="blue-box">
+  <div>
     <div class="icon-row">
         @if (icons != null)
         {
@@ -33,10 +35,8 @@
                 var image = content.Value<IPublishedContent>("image");
                 var title = content.Value<string>("title");
                 
-                // קודם ננסה להביא Multi URL Picker
                 var links = content.Value<IEnumerable<Umbraco.Cms.Core.Models.Link>>("link");
                 
-                // אם אין Multi URL Picker ננסה להביא URL Picker בודד
                 var singleLink = content.Value<Umbraco.Cms.Core.Models.Link>("link");
 
                 var imageUrl = image?.Url() ?? "/path/to/default-image.jpg";
@@ -60,13 +60,14 @@
             }
         }
     </div>
+  </div>
 
 @{
   var youtubeVideoId = Model.Value<string>("youtubeVideoId");
   var programs = Model.Value<IEnumerable<IPublishedContent>>("programsGrid")?.Take(4) ?? Enumerable.Empty<IPublishedContent>();
 }
 
-<div style="display: flex; width: 100%; gap: 20px; margin-top: 80px;">
+<div style="display: flex; width: 100%; gap: 20px; margin-top: 80px; background-image: linear-gradient(350deg, #003153 0%, #007DFF7D 100%);">
 
     <div style="flex: 1; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 10px;">
         @foreach (var program in programs)
@@ -97,56 +98,161 @@
 
 </div>
 
+</div> 
+
 <div style="margin:50px;"/>
 
+
 @{
-    var podcasts = Model.Value<IEnumerable<IPublishedContent>>("podcastGrid");
+    var videoUrl = Model.Value<string>("videoUrlPromo");
+    var videoPoster = Model.Value<IPublishedContent>("videoPoster")?.Url();
+    var titlePromo = Model.Value<string>("titlePromo");
+    var descriptionPromo = Model.Value<string>("descriptionPromo");
+    var buttonText = Model.Value<string>("buttonTextPromo");
+    var buttonContent = Model.Value<IPublishedContent>("buttonLinkPromo");
+    var buttonUrl = buttonContent != null ? buttonContent.Url() : null;
 }
 
-@if (podcasts != null)
-{
-    foreach (var podcast in podcasts)
-    {
-        var image = podcast.Value<IPublishedContent>("squareImage");
-        var imageUrl = image?.Url() ?? "/path/to/default-image.jpg";
-        var name = podcast.Value<string>("ProgramName");
-        var description = podcast.Value<string>("descriptionProgram");
 
-        <div class="col-6 col-md-3 col-lg-1-5">
-            <div class="card h-100 shadow-sm podcast-card">
-                <a href="#" style="text-decoration:none; color:inherit;">
-                    <img src="@imageUrl" class="card-img-top" alt="@name" style="object-fit: cover; height: 120px;">
-                    <div class="card-body text-center">
-                        <h6 class="card-title text-truncate" title="@name">@name</h6>
-                        <p class="card-text text-muted" style="font-size: 13px; max-height: 40px; overflow: hidden;">@description</p>
-                    </div>
-                </a>
-            </div>
+<section class="promo-section">
+    <div class="promo-container">
+        <div class="promo-text">
+            @if (!string.IsNullOrEmpty(titlePromo))
+            {
+                <h2>@titlePromo</h2>
+            }
+            @if (!string.IsNullOrEmpty(descriptionPromo))
+            {
+                <div class="promo-description">@Html.Raw(descriptionPromo)</div>
+            }
+                <button>
+                   <a href="@buttonUrl" class="promo-btn">@buttonText</a>
+                </button>
         </div>
-    }
-}
-
+        <div class="promo-video">
+            @if (!string.IsNullOrEmpty(videoUrl))
+            {
+            <video controls width="100%" poster="@(string.IsNullOrEmpty(videoPoster) ? "/media/eizpwn3h/img.png" : videoPoster)">
+                <source src="@videoUrl" type="video/mp4">
+                הדפדפן שלך לא תומך בניגון וידאו.
+            </video>
+            }
+        </div>
+    </div>
+</section>
 
 <style>
-    @@media (min-width: 1200px) {
-        .col-lg-1-5 {
-            flex: 0 0 12.5%;
-            max-width: 12.5%;
-        }
-    }
-    .podcast-card {
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-    .podcast-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    }
+.promo-section {
+    background: linear-gradient(to bottom, #0f2b46, #0b4b6f);
+    color: white;
+    direction: rtl;
+    width: 100%;          /* נמתח על כל הרוחב */
+    margin: 0;            /* בלי רווחים בצדדים */
+    padding: 50px 0;      /* ריווח עליון/תחתון */
+}
+
+.promo-container {
+    max-width: 1200px;    /* מגביל את התוכן לרוחב מסוים */
+    margin: 0 auto;       /* מרכז את התוכן */
+    padding: 0 20px;      /* ריווח פנימי בצדדים */
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.promo-video {
+    flex: 1;
+    min-width: 800px;
+}
+
+.promo-text {
+    flex: 1;
+    min-width: 300px;
+}
+
+.promo-text h2 {
+    font-size: 32px;
+    margin-bottom: 15px;
+    font-weight: bold;
+    text-align: right;
+}
+
+.promo-description {
+    font-size: 18px;
+    margin-bottom: 20px;
+    text-align: right;
+}
+
+.promo-btn {
+    background: #3c6ff7;
+    color: white;
+    padding: 12px 24px;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: bold;
+    display: inline-block;
+    transition: background 0.3s ease;
+    font-family: "Assistant", Sans-serif;
+    font-weight: 800;
+    background-color: #3947a3;
+    border-style: solid;
+    text-align: right;
+}
+
+.promo-btn:hover {
+    background: #2a53c6;
+}
+
+.podcastsClass{
+    background-color: white;
+}
 </style>
 
+@{
+    var podcasts = Model.Value<IEnumerable<BlockListItem>>("podcastGrid");
+}
+
+<section class="podcastsClass">
+    <h1 class="text-center page-title">הסכתי גל"צ</h1>
+
+    <div class="row podcast-grid">
+        @if (podcasts != null && podcasts.Any())
+        {
+            foreach (var podcastBlock in podcasts)
+            {
+                var podcast = podcastBlock.Content;
+                var programItem = podcast.Value<IPublishedContent>("programItem");
+
+                if (programItem != null)
+                {
+                    var image = programItem.Value<IPublishedContent>("squareImage");
+                    var imageUrl = image?.Url() ?? "/path/to/default-image.jpg";
+                    var name = programItem.Value<string>("programName");
+                    var description = programItem.Value<string>("discreption");
+                    var programUrl = programItem.Url();
+
+                    <div class="col-6 col-md-4 col-lg-3 mb-4">
+                        <a href="@programUrl" class="program-link program-card-image">
+                            <div class="program-image">
+                                <img src="@imageUrl" alt="@name" class="program-image" />
+                            </div>
+                        </a>
+                        <h6 class="program-title mt-2" title="@name">@name</h6>
+                        <p class="program-description">@description</p>
+                    </div>
+                }
+            }
+        }
+        else
+        {
+            <p class="text-center text-muted">אין תכניות להצגה.</p>
+        }
+    </div>
+</section>
 
 
 
-</div> 
 
 
 

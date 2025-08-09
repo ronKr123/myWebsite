@@ -1,3 +1,6 @@
+
+
+
 .icon-row {
   display: flex;
   justify-content: center;
@@ -33,28 +36,20 @@
 }
 
 .blue-box {
+    padding: 20px; 
     background-color: #3C7BCD; 
-    padding: 20px;
     color: white; 
 }
 
 .banner-container {
-    width: 100%;
-    overflow: hidden;
+    width: 100% ;
+    height: 350px ; 
 }
 
 .banner-image {
-    width: 100%;
-    height: 270px; 
+    width: 100% ;
+    height: 100% ;
     object-fit: cover;
-}
-
-.program-card {
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-.program-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 
