@@ -1,49 +1,35 @@
-﻿<nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <a class="navbar-brand" href="https://localhost:44316/">גלצ פלוס</a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
+﻿<link rel="stylesheet" href="~/css/NavigationStyle.css" />
 
-  <div class="collapse navbar-collapse" id="navbarSupportedContent">
-    <ul class="navbar-nav mr-auto">
+<nav class="navbar navbar-expand-lg navbar-light" style="background-color: #91D4ED;">
+    <div class="container-fluid">
 
-      <li class="nav-item active">
-        <a class="nav-link" href="#">עמוד הבית <span class="sr-only">(current)</span></a>
-      </li>
+        <!-- כפתור המבורגר בנייד -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
-      <li class="nav-item">
-        <a class="nav-link" href="/קטגוריות/מוזיקה">מוזיקה</a>
-      </li>
+        <!-- פריטי תפריט -->
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <!-- אייקונים בצד שמאל -->
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/%D7%97%D7%99%D7%A4%D7%95%D7%A9/" id="search-icon"><i class="fas fa-search" style="font-size: 30px;"></i></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#"><i class="fas fa-heart" style="font-size: 30px; color: red;"></i></a>
+                </li>
+            </ul>
 
-      <li class="nav-item">
-        <a class="nav-link" href="https://localhost:44316/%D7%A7%D7%98%D7%92%D7%95%D7%A8%D7%99%D7%95%D7%AA/%D7%94%D7%A1%D7%9B%D7%AA%D7%99%D7%9D/">הסכתים</a>
-      </li>
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item"><a class="nav-link" href="kids.html">ארכיון</a></li>
+                <li class="nav-item"><a class="nav-link" href="culture.html">ילדים ונוער</a></li>
+                <li class="nav-item"><a class="nav-link" href="culture.html">תרבות ופנאי</a></li>
+                <li class="nav-item"><a class="nav-link" href="culture.html">סדרות רשת</a></li>
+                <li class="nav-item"><a class="nav-link" href="culture.html">הסכתים</a></li>
+                <li class="nav-item"><a class="nav-link" href="culture.html">מוזיקה</a></li>
+            </ul>
+        </div>
 
-      <li class="nav-item">
-        <a class="nav-link" href="href="/רשת-קטגוריות/סדרות">סדרות רשת</a>
-      </li>
-
-      <li class="nav-item">
-        <a class="nav-link" href="https://localhost:44316/%D7%97%D7%99%D7%A4%D7%95%D7%A9" >תרבות ופנאי</a>
-      </li>
-      
-      <li class="nav-item">
-        <a class="nav-link" href="#">ילדים ונוער</a>
-      </li>
-
-      <li class="nav-item">
-        <a class="nav-link" href="/קטגוריות/ארכיון" >ארכיון</a>
-      </li>
-
-
-    <form class="form-inline my-2 my-lg-0" style="align-text:left;">
-      <input class="form-control mr-sm-2" type="search" placeholder="חפש כאן" aria-label="Search" >
-      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">חיפוש</button>
-    </form>
-
-    <li class="nav-item">
-    <a class="nav-link" href="/קטגוריות/ארכיון" ><i class="fa-solid fa-magnifying-glass" style="color: #74C0FC;"></i></a>
-      </li>
-      
-  </div>
+        <!-- לוגו בצד ימין -->
+        <a class="navbar-brand fw-bold" href="/"><img src="/media/fdpfk0xw/screenshot_2025-08-10_183245-removebg-preview.png" style="height: 80px;"></a>
 </nav>

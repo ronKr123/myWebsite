@@ -1,131 +1,222 @@
-﻿@using Umbraco.Cms.Web.Common.PublishedModels;
+﻿@using Umbraco.Cms.Core.Models
+@using Umbraco.Cms.Core.Models.PublishedContent
 @inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
+
 @{
-	Layout = "master.cshtml";
+    Layout = "master.cshtml";
+
+    var programsRoot = Umbraco.Content(Guid.Parse("0f551540-40fc-411a-95a0-dd93ff7cb1a9")); 
+    var programs = programsRoot.ChildrenOfType("program").ToList();
+
+    string GetCategoryIcon(IPublishedContent program)
+    {
+        var categories = program.Value<IEnumerable<Link>>("category");
+        if (categories == null) return "";
+
+        foreach (var cat in categories)
+        {
+            var name = cat.Name?.Trim().ToLower();
+            if (string.IsNullOrEmpty(name)) continue;
+
+            if (!name.Contains("הסכתים") && !name.Contains("סדרות רשת"))
+                return "<span class='cat-icon'><img src=\"/media/5tslnqxh/img1.png\" alt=\"רדיו\" class=\"cat-img\" /></span>";
+
+            if (name.Contains("הסכתים"))
+                return "<span class='cat-icon'><img src=\"/media/31elcths/img2.png\" alt=\"הסכתים\" class=\"cat-img\" /></span>";
+
+            if (name.Contains("סדרות רשת"))
+                return "<span class='cat-icon'><img src=\"/media/cisnxd3h/img3.png\" alt=\"סדרות רשת\" class=\"cat-img\" /></span>";
+        }
+        return "";
+    }
 }
 
-<h1 class="text-center">חיפוש</h1>
-
-
-<section class="search-section">
-    <input type="text" id="searchInput" placeholder=" ...חפש תוכנית או פרק" />
-    <div id="resultsContainer" class="results-list"></div>
-</section>
-
 <style>
-    .search-section {
-        padding: 20px;
-        max-width: 800px;
-        margin: 0 auto;
-    }
-
-    #searchInput {
-		text-align: right;
-        width: 100%;
-        padding: 12px;
-        font-size: 16px;
-        margin-bottom: 20px;
-        border-radius: 5px;
-        border: 1px solid #ccc;
-    }
-
-    .results-list {
+    .search-wrapper {
         display: flex;
-        flex-direction: column;
-        gap: 15px;
+        justify-content: center;
+        margin-bottom: 25px;
+        margin-top: 30px;
     }
 
-    .result-item {
+    .search-box {
         display: flex;
         align-items: center;
-        background: #222;
-        color: white;
-        border-radius: 8px;
-        padding: 10px;
+        background: #fff;
+        border-radius: 10px;
+        padding: 5px 10px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        max-width: 400px;
+        width: 100%;
+        height: 45px;
+    }
+
+    .search-box input {
+        border: none;
+        outline: none;
+        flex: 1;
+    }
+
+    .search-box button {
+        border: none;
+        background: none;
         cursor: pointer;
-        transition: transform 0.2s;
-    }
-
-    .result-item:hover {
-        transform: scale(1.02);
-    }
-
-    .result-item img {
-        width: 80px;
-        height: 80px;
-        object-fit: cover;
-        border-radius: 5px;
-        margin-left: 10px;
-    }
-
-    .result-details {
-        display: flex;
-        flex-direction: column;
-    }
-
-    .result-details h3 {
-        margin: 0;
+        color: #007bff;
         font-size: 18px;
     }
 
-    .result-details p {
-        margin: 0;
-        font-size: 14px;
-        color: #aaa;
+    .program-card {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #fff;
+        border: 1px solid #000;
+        border-radius: 15px;
+        padding: 15px;
+        gap: 15px;
+        margin-bottom: 5px;
     }
 
-    .highlight {
-        background: yellow;
+    .program-info {
+        flex: 1;
+        text-align: right;
+    }
+
+    .program-title {
+        font-weight: bold;
+        font-size: 25px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        text-align: right;
+    }
+
+    .program-desc {
+        color: #333;
+        font-size: 15px;
+        margin-top: 4px;
+    }
+
+    .cat-img {
+        width: 22px;
+        height: 22px;
+    }
+
+    .program-image {
+        max-width: 120px;
+        max-height: 200px;
+        border-radius: 8px;
+    }
+
+    .btn-entry {
+        background: #87aee6;
+        border: none;
+        color: #000;
+        font-weight: bold;
+        padding: 6px 14px;
+        border-radius: 50px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 14px;
+        cursor: pointer;
+        text-decoration: none;
+    }
+
+    .btn-entry i {
+        font-size: 14px;
+    }
+
+    #noResults {
+        text-align: center;
         color: black;
+        font-weight: bold;
+        margin-top: 30px;
+        margin-bottom: 30px;
+        display: none;
+        font-size: 30px;
     }
 </style>
 
+<div class="search-wrapper">
+    <div class="search-box">
+        <input type="text" id="searchInput" placeholder="חפש תוכנית..." />
+        <button type="button" onclick="filterPrograms()">
+            <i class="fas fa-search"></i>
+        </button>
+    </div>
+</div>
+
+<div id="searchResultsTitle" style="text-align:center; font-weight:bold; margin-bottom:15px; display:none; direction: rtl;">
+    תוצאות החיפוש עבור "<span id="searchQuery" style="direction: rtl;"></span>"
+</div>
+
+<div id="noResults">אין תוצאות</div>
+
+<div class="container">
+    <div class="row gy-3" id="programList">
+        @foreach (var program in programs)
+        {
+            var title = program.Name;
+            var description = program.Value<string>("discreption") ?? "";
+            var image = program.Value<IPublishedContent>("squareImage")?.Url() ?? "/media/default.jpg";
+            var url = program.Url();
+            var iconHtml = GetCategoryIcon(program);
+
+            <div class="col-12 program-card-wrapper" data-title="@title" style="display:none;">
+                <div class="program-card">
+                    <a href="@url" class="btn-entry">
+                        <i class="fas fa-arrow-left"></i> כניסה
+                    </a>
+                    <div class="program-info">
+                        <div class="program-title" style="direction: rtl;">
+                            @title
+                        </div>
+                        <div class="program-desc" style="direction: rtl;">@description</div>
+                    </div>
+                    <div>
+                        <a href="@url">
+                            <img src="@image" alt="@title" class="program-image" />
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
 <script>
-    const searchInput = document.getElementById('searchInput');
-    const resultsContainer = document.getElementById('resultsContainer');
+    const searchInput = document.getElementById("searchInput");
+    const searchResultsTitle = document.getElementById("searchResultsTitle");
+    const searchQuerySpan = document.getElementById("searchQuery");
+    const cards = document.getElementsByClassName("program-card-wrapper");
+    const noResults = document.getElementById("noResults");
 
-    function highlightText(text, query) {
-        const regex = new RegExp(`(${query})`, 'gi');
-        return text.replace(regex, '<span class="highlight">$1</span>');
-    }
+    function filterPrograms() {
+        const query = searchInput.value.trim().toLowerCase();
+        let foundAny = false;
 
-    searchInput.addEventListener('input', async () => {
-        const query = searchInput.value.trim();
-        if (!query) {
-            resultsContainer.innerHTML = "";
-            return;
+        if (query !== "") {
+            searchResultsTitle.style.display = "block";
+            searchQuerySpan.textContent = searchInput.value;
+        } else {
+            searchResultsTitle.style.display = "none";
         }
 
-        const response = await fetch(`/umbraco/api/Search/Search?query=${encodeURIComponent(query)}`);
-        const results = await response.json();
-
-        resultsContainer.innerHTML = "";
-
-        results.forEach(result => {
-            const div = document.createElement('div');
-            div.className = "result-item";
-
-            if (result.Type === "program") {
-                div.innerHTML = `
-                    <img src="${result.Banner}" alt="${result.Name}" />
-                    <div class="result-details">
-                        <h3>${highlightText(result.Name, query)}</h3>
-                    </div>
-                `;
-                div.addEventListener('click', () => window.location.href = result.Url);
+        for (let card of cards) {
+            const title = card.getAttribute("data-title").toLowerCase();
+            if (query !== "" && title.includes(query)) {
+                card.style.display = "block";
+                foundAny = true;
+            } else {
+                card.style.display = "none";
             }
-            else if (result.Type === "episode") {
-                div.innerHTML = `
-                    <img src="${result.Image}" alt="${result.EpisodeName}" />
-                    <div class="result-details">
-                        <h3>${highlightText(result.EpisodeName, query)}</h3>
-                        <p>${result.ProgramName}</p>
-                    </div>
-                `;
-                div.addEventListener('click', () => window.location.href = result.Url);
-            }
+        }
 
-            resultsContainer.appendChild(div);
-        });
-    });
+        noResults.style.display = (!foundAny && query !== "") ? "block" : "none";
+    }
+
+    searchInput.addEventListener("input", filterPrograms);
 </script>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
