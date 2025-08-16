@@ -7,7 +7,7 @@
 @inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
 @using System.Xml.Linq
 
-<link rel="stylesheet" href="/css/CategoryStyle.css"/>
+<link rel="stylesheet" href="/css/PodcastsPageGridStyleNew.css"/>
 
 @functions {
     public class Episode
@@ -71,9 +71,9 @@
 }
 
 <section class="podcasts-section">
-    <h2>הסכתים אחרונים</h2>
-    <div id="episodes-container" class="episodes-grid">
-        @foreach (var ep in episodes.Take(8))
+    <h1 class="text-center m-3" style="font-family: Assistant, sans-serif;">הסכתים אחרונים ששודרו</h1>
+    <div class="custom-episodes-wrapper">
+        @foreach (var ep in episodes.Take(4)) // הצגה של 4 כרטיסים בלבד
         {
             var dateString = ep.PubDate;
             DateTime pubDate;
@@ -81,20 +81,29 @@
                 ? pubDate.ToString("dd.MM.yy")
                 : dateString;
 
-            <div class="episode-card">
+            <div class="custom-episode-card">
+                    <a href="/episode?guid=@ep.Guid&programId=@ep.ProgramId" >
+                       <i class="fa-solid fa-circle-play"></i>
+                    </a>
+                    <div class="card-text">
+                    <h4 style="direction: rtl; text-align: right;">@ep.Title</h4> 
+                    <p style="direction: rtl; text-align: right;">@formattedDate</p> 
+                </div>
                 @if (!string.IsNullOrEmpty(ep.Image))
                 {
-                    <img src="@ep.Image" alt="@ep.Title" />
+                    <a href="/episode?guid=@ep.Guid&programId=@ep.ProgramId" >
+                       <img src="@ep.Image" alt="@ep.Title" />
+                    </a>
                 }
-                <h4>@ep.Title</h4>
-                <h5>@formattedDate</h5>
-                <a href="/episode?guid=@ep.Guid&programId=@ep.ProgramId" class="play-button">
-                    <i class="fa-solid fa-play-circle"></i>
-                </a>
             </div>
         }
     </div>
 </section>
+
+    <div class="center-icon">
+        <hr/>
+        <img src="/media/uw5btioc/הסכתים.png" alt="אייקון" /> 
+    </div>
 
 @{
 var currentCategory = Model;
@@ -137,17 +146,17 @@ var currentCategory = Model;
 }
 else
 {
-    <h1 class="text-center mt-2">@currentCategory.Name</h1>
+    <h1 class="text-center mt-3" style="margin-top: 10px;">@currentCategory.Name</h1>
     <div class="programs-grid">
         @foreach (var program in programsPage)
         {
-            var img = program.Value<IPublishedContent>("squareImage");
+            var img = program.Value<IPublishedContent>("IconImage");
             var imgUrl = img != null ? img.Url() : "/path/to/placeholder.jpg";
 
             <div class="program-card">
                 <a href="@program.Url()">
                     <img src="@imgUrl" alt="@program.Name" />
-                    <div>@program.Name</div>
+                    <h4 class="text-center">@program.Name</h4>
                 </a>
             </div>
         }
@@ -156,7 +165,7 @@ else
 
 @if (totalPages > 1)
 {
-    <div class="pagination">
+    <div class="pagination" style="display: flex; justify-content: center; align-items: center; margin-bottom: 10px;">
         @for (int i = 1; i <= totalPages; i++)
         {
             if (i == currentPage)
@@ -174,53 +183,97 @@ else
 
 <style>
     body{
-        background-color: lightblue;
-    }
-    .podcasts-section {
-        padding: 40px;
-        color: white;
+        background-color: linear-gradient(to bottom, #e0eafc, #cfdef3) imporrtant;
     }
 
-    .episodes-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-        gap: 20px;
-        margin-top: 20px;
-    }
+.podcasts-section {
+    font-family: Arial, sans-serif;
+}
 
-    .episode-card {
-        background: #222;
-        border-radius: 10px;
-        overflow: hidden;
-        cursor: pointer;
-        transition: transform 0.3s;
-        display: flex;
-        flex-direction: column;
-        text-align: center;
-    }
+.custom-episodes-wrapper {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    justify-content: center;
+    padding: 20px; 
+}
 
-    .episode-card:hover {
-        transform: scale(1.05);
-    }
+.custom-episode-card {
+    display: flex;
+    align-items: center;
+    background: white;
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    max-width: 100%; 
+    width: 100%; 
+    box-sizing: border-box; 
+}
 
-    .episode-card img {
-        width: 100%;
-        height: 150px;
-        object-fit: cover;
-    }
+.custom-episode-card img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-left: 15px;
+}
 
-    .episode-details {
-        padding: 10px;
-    }
+.card-text {
+    flex: 1;
+}
 
-    .episode-details h3 {
-        margin: 10px 0 5px;
-        font-size: 18px;
-    }
+.card-text h4 {
+    font-size: 20px;
+    margin: 0 0 5px;
+    font-weight: bold;
+}
 
-    .episode-details p {
-        margin: 0;
-        font-size: 14px;
-        color: #aaa;
+.card-text p {
+    font-size: 14px;
+    color: #555;
+    margin: 0;
+}
+
+.custom-episode-card i {
+    color: black;
+    font-size: 45px;
+    cursor: pointer;
+}
+
+.custom-episode-card i:hover {
+    color: #0078d7;
+}
+
+@@media (max-width: 768px) {
+    .custom-episodes-wrapper {
+        grid-template-columns: 1fr;
+        padding: 0; 
     }
+}
+
+.center-icon {
+    position: relative;
+    text-align: center;
+    margin: 20px 0;
+}
+
+.center-icon hr {
+    border: none;
+    border-top: 1.5px solid #999;
+    margin: 0;
+    position: relative;
+    top: 50%;
+}
+
+.center-icon img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 0 10px;
+    height: 80px;
+    weight: 80px;
+    margin-bottom: 10px;
+}
+
 </style>

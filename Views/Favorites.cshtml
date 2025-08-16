@@ -1,0 +1,55 @@
+﻿@using Umbraco.Cms.Web.Common.PublishedModels;
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
+@{
+	Layout = "master.cshtml";
+}
+
+<style>
+body{
+    background-color: #BDEAF2;
+}
+</style>    
+
+<div class="container mt-5" >
+    <h1 class="text-center mb-4" style="font-family: Assistant, Sans-serif; font-size: 57px; font-weight: 500;">תכניות מועדפות</h2>
+    <div class="row" id="favorites-container" style="gap:20px;">
+    </div>
+</div>
+
+<script>
+    const favoritesContainer = document.getElementById("favorites-container");
+    const favorites = JSON.parse(localStorage.getItem("favoritePrograms") || "[]");
+
+    if (favorites.length === 0) {
+        favoritesContainer.innerHTML = "<p>לא הוספת עדיין תכניות למועדפים.</p>";
+    } else {
+        favorites.forEach(fav => {
+            const card = document.createElement("div");
+            card.classList.add("col-md-3");
+            card.innerHTML = `
+                <div class="card" style="width:100%; margin-bottom:20px;">
+                    <img src="${fav.image}" class="card-img-top" alt="${fav.name}">
+                    <div class="card-body">
+                        <h5 class="card-title">${fav.name}</h5>
+                        <a href="${fav.urlProgram}" class="btn btn-primary">צפה בתכנית</a>
+                        <button class="btn btn-danger remove-btn" data-id="${fav.id}">הסר</button>
+                    </div>
+                </div>
+            `;
+            favoritesContainer.appendChild(card);
+        });
+
+        // הסרת מועדפים מהעמוד
+        document.querySelectorAll(".remove-btn").forEach(btn => {
+            btn.addEventListener("click", (e) => {
+                const id = parseInt(e.target.getAttribute("data-id"));
+                const index = favorites.findIndex(f => f.id === id);
+                if (index !== -1) {
+                    favorites.splice(index, 1);
+                    localStorage.setItem("favoritePrograms", JSON.stringify(favorites));
+                    e.target.closest(".col-md-3").remove();
+                }
+            });
+        });
+    }
+</script>

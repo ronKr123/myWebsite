@@ -2,19 +2,14 @@
 @inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@200..800&display=swap" rel="stylesheet">
 
 <style>
     body {
         margin: 0;
         padding: 0;
-        font-family: Arial, sans-serif;
         background-color: #fff;
         color: #333;
-        /* background-image: url('/media/oqbnvw4h/backimg.png');
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center;
-    background-attachment: fixed; */
     }
 
     .banner-container {
@@ -27,6 +22,7 @@
         width: 100%;
         height: 100%;
         object-fit: cover;
+        box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.3);
     }
 
     .program-header {
@@ -41,12 +37,14 @@
         display: flex;
         align-items: center;
         gap: 15px;
+        font-family: Arial, sans-serif;
     }
 
     .program-title h1 {
         margin: 0;
         font-size: 32px;
         font-weight: bold;
+        font-family: Arial, sans-serif;
     }
 
     .share-btn {
@@ -82,6 +80,7 @@
         margin: 0 20px 30px 20px;
         font-size: 18px;
         color: #444;
+        font-family: Arial, sans-serif;
     }
 
     .episode-list {
@@ -142,23 +141,27 @@
         text-align: right;
         direction: rtl;
         margin-right: 10px;
+        font-family: Arial, sans-serif;
     }
 
     .episode-info h4 {
         margin: 0;
         font-size: 30px;
         font-weight: bold;
+        font-family: Arial, sans-serif;
     }
 
     .episode-info p.description {
         margin: 5px 0;
         font-size: 20px;
         color: #666;
+        font-family: Arial, sans-serif;
     }
 
     .episode-info .date {
         font-size: 15px;
         color: #aaa;
+        font-family: Arial, sans-serif;
     }
 
   #load-more {
@@ -186,17 +189,6 @@
 
 #load-more:hover i {
     background-color: #001f66;
-}
-
-hr {
-    border: none;
-    height: 4px;
-    background: linear-gradient(to right, #092782, #ffe666);
-    margin: 40px auto;
-    width: 80%;
-    border-radius: 2px;
-}
-
 }
 
 </style>
@@ -291,13 +283,17 @@ hr {
     <div class="program-title">
         <h1>@Model.Name</h1>
     </div>
+
+    <button id="favorite-btn" style="font-size:30px; background:none; border:none; cursor:pointer;">
+        <i class="fa-regular fa-heart" id="favorite-icon"></i>
+    </button>
 </div>
 
 <div class="m-3 richtext-container">
     @Html.Raw(FormatDescription(@dis))
 </div>
 
-<hr>
+<hr />
 
 @if (!episodes.Any())
 {
@@ -394,3 +390,41 @@ else
     }
 
 </script>
+
+<script>
+    const programId = @Model.Id; // מזהה התכנית
+    const programName = "@Model.Name";
+    const programImage = "@(Model.Value<IPublishedContent>("squareImage")?.Url() ?? "")";
+    const programUrl = "@Model.Url()";
+
+    // טען את רשימת המועדפים מה-LocalStorage
+    let favorites = JSON.parse(localStorage.getItem("favoritePrograms") || "[]");
+
+    const favoriteBtn = document.getElementById("favorite-btn");
+    const favoriteIcon = document.getElementById("favorite-icon");
+
+    // בדוק אם התכנית כבר במועדפים
+    if (favorites.find(p => p.id === programId)) {
+        favoriteIcon.classList.remove("fa-regular");
+        favoriteIcon.classList.add("fa-solid");
+    }
+
+    favoriteBtn.addEventListener("click", () => {
+        const index = favorites.findIndex(p => p.id === programId);
+
+        if (index === -1) {
+            // הוסף למועדפים
+            favorites.push({ id: programId, name: programName, image: programImage, urlProgram: programUrl });
+            favoriteIcon.classList.remove("fa-regular");
+            favoriteIcon.classList.add("fa-solid");
+        } else {
+            // הסר מהמועדפים
+            favorites.splice(index, 1);
+            favoriteIcon.classList.remove("fa-solid");
+            favoriteIcon.classList.add("fa-regular");
+        }
+
+        localStorage.setItem("favoritePrograms", JSON.stringify(favorites));
+    });
+</script>
+

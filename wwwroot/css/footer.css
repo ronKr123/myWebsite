@@ -1,15 +1,26 @@
 
+body {
+
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+main {
+  flex: 1; /* דוחף את ה-footer למטה */
+}
 
 .custom-footer {
   background: linear-gradient(to bottom right, #96b9d6, #6f8eac);
-  /* padding: 40px 20px; */
   direction: rtl;
   font-family: Arial, sans-serif;
+  margin: 0; /* ביטול רווח חיצוני */
+  width: 100%; /* לכל רוחב המסך */
+  padding: 20px; /* ריווח פנימי נעים */
 }
 
 .footer-container {
-  max-width: 1200px;
-  /* margin: auto; */
+  max-width: 100%;
+  margin: 0; 
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
@@ -18,7 +29,7 @@
 
 .footer-column {
   flex: 1 1 300px;
-  margin: 10px;
+  margin: 0; 
 }
 
 .footer-column h3 {

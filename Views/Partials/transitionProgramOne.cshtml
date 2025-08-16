@@ -1,0 +1,171 @@
+﻿<style>
+  :root {
+    --hero-bg2: url("https://xrhilbln.elementor.cloud/wp-content/uploads/2025/06/12%D7%A1%D7%99%D7%95%D7%9F-%D7%95%D7%9E%D7%90%D7%99%D7%94-%D7%A1%D7%95%D7%A4%D7%99-scaled.jpg");
+    --accent-yellow: #f5d643;;
+    --white-semi: rgba(255, 255, 255, 0.95);
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  .hero {
+    background-image: var(--hero-bg2);
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    padding: 85px 24px ;
+    line-height: 1.5;
+    margin: -50px -50px;
+    font-family: "Assistant", sans-serif;
+    height: 700px;
+  }
+
+  .hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    z-index: 1;
+  }
+
+  .hero-inner {
+    position: relative;
+    display: flex;
+    flex-direction: row-reverse;
+    gap: clamp(80px, 10vw, 160px);
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1280px;
+    margin: auto;
+    z-index: 2;
+    flex-wrap: wrap;
+  }
+
+  .hero-col {
+    flex: 1 1 480px;
+    min-width: 320px;
+  }
+
+  .hero-title-wrap {
+    color: var(--accent-yellow);
+    font-family: "Assistant", sans-serif;
+    font-size: 70px;
+    font-weight: 800;
+    text-shadow: 4px 0px 0px rgba(0, 0, 0, 0.4);
+    transform: rotate(-4deg);
+    transform-origin: right top;
+    margin-bottom: 28px;
+    direction: rtl;
+    text-align: right;
+  }
+
+  .hero-title-wrap span {
+    display: block;
+    line-height: 1.1;
+  }
+
+  .hero-sub {
+    max-width: 600px;
+    direction: rtl;
+    text-align: right;
+
+    color: #FFFFFF;
+    font-family: "Assistant", Sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    text-shadow: 0px 0px 10px #000000;
+  }
+
+  .hero-cta {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 12px 20px;
+    background: var(--white-semi);
+    color: #111;
+    font-weight: bold;
+    text-decoration: none;
+    border-radius: 6px;
+    border: 2px solid #fff;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+    text-align: right;
+  }
+
+  .video-frame-wrap {
+    width: 100%;
+    max-width: 1000px;
+    aspect-ratio: 16/9;
+    overflow: hidden;
+    border-radius: 12px;
+    border: 4px solid #fff;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+    margin: auto;
+  }
+
+  iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    display: block;
+  }
+
+  .video-caption {
+    text-align: right;
+    color: #fff;
+    margin-top: 12px;
+    font-size: 22px;
+    direction: rtl;
+    font-family: "Assistant", Sans-serif;
+  }
+
+  .a-div{
+    text-align: right;
+  }
+
+  @@media (max-width: 900px) {
+    .hero-inner {
+      flex-direction: column;
+      gap: 40px;
+    }
+
+    .hero-title-wrap {
+      text-align: center;
+      transform: none;
+    }
+
+    .hero-sub {
+      text-align: center;
+    }
+
+    .video-caption {
+      text-align: center;
+    }
+  }
+</style>
+
+<section class="hero">
+  <div class="hero-inner">
+
+    <!-- טקסט -->
+    <div class="hero-col">
+      <div class="hero-title-wrap">
+        <img src="https://xrhilbln.elementor.cloud/wp-content/uploads/2025/06/%D7%9B%D7%A7%D7%9B%D7%93%D7%A2%D7%A9%D7%93-1024x407.png"/>
+      </div>
+      <p class="hero-sub">
+        לכבוד שבועות מאיה ורטהיימר וסיון טלמור בתכנית המיתולוגית שלנו ״ממי קיבלתי את התורה?״, והתשובה שלהן – דויד ברוזה!  מהפעם הראשונה שהקשיבו לו אי שם בילדות ואיך המוסיקה שלו מלווה אותן לאורך השנים 
+      </p>
+      <div class="a-div">
+        <a class="hero-cta" href="#"לצפייה בקטעים נוספים</a>
+      </div>
+    </div>
+
+    <!-- וידאו -->
+    <div class="hero-col">
+      <div class="video-frame-wrap">
+        <iframe width="560" height="315" src="https://www.youtube.com/embed/i_Ek-sxT_0k?si=mySscuAxCO9SNKNo" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+      </div>
+      <div class="video-caption">מאיה ורטהיימר וסיון טלמור | ממי קיבלתי את התורה?</div>
+    </div>
+
+  </div>
+</section>

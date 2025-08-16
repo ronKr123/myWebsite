@@ -42,14 +42,17 @@
     @if (!string.IsNullOrWhiteSpace(episodeVideoUrl))
     {
         <div class="video-container">
+            <h1 class="text-center mb-4">@episodeName</h1>
             <iframe src="@episodeVideoUrl" frameborder="0" allowfullscreen></iframe>
         </div>
     }
 
-    <h1>@episodeName</h1>
-    <p>@Html.Raw(episodeDescription)</p>
+    <p style="text-align: right; direction: RTL;">@Html.Raw(episodeDescription)</p>
+
+    <hr />
+
     @if(otherEpisodes != null){
-        <h2>מוזמנים לצפות גם בפרקים נוספים</h2>
+        <h2 style="direction: RTL;">מוזמנים לצפות גם בפרקים נוספים:</h2>
         <div class="episodes-grid" >
             @foreach (var ep in otherEpisodes)
             {
@@ -83,12 +86,13 @@
         width: 100%;
         height: 450px;
         border-radius: 10px;
+        box-shadow: 0 20px 20px rgba(0, 0, 0, 0.2);
     }
 
     h2 {
         text-align: right;
         color:black;
-        margin-top: 40px;
+        margin-top: 10px;
         font-size: 30px;
     }
 
@@ -97,6 +101,7 @@
         grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
         gap: 20px;
         margin-top: 20px;
+        direction: RTL;
     }
 
     .episode-card {

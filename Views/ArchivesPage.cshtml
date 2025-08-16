@@ -105,21 +105,27 @@
     .swiper-slide a {
         display: block;
         border-radius: 6px;
-        overflow: hidden;
+        overflow: hidden; 
         cursor: pointer;
         text-decoration: none;
         color: inherit;
         user-select: none;
     }
 
-    .swiper-slide img {
-        width: 100%;
-        height: 250px;
-        object-fit: cover;
-        display: block;
-        border-radius: 12px;
-        box-shadow: 0 12px 12px rgba(0, 0, 0, 0.08);
-    }
+    .swiper-slide {
+    height: auto !important;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.swiper-slide img {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    border-radius: 12px;
+    box-shadow: 0 12px 12px rgba(0, 0, 0, 0.08);
+}
 
     .swiper-slide h3 {
         margin-top: 8px;
