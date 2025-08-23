@@ -42,13 +42,18 @@
     @if (!string.IsNullOrWhiteSpace(episodeVideoUrl))
     {
         <div class="video-container">
-            <h1 class="text-center mb-4">@episodeName</h1>
+            <h1 class="text-center mb-4" style="direction: RTL;">@episodeName</h1>
             <iframe src="@episodeVideoUrl" frameborder="0" allowfullscreen></iframe>
         </div>
     }
 
-    <p style="text-align: right; direction: RTL;">@Html.Raw(episodeDescription)</p>
+@{
+    var formattedDescription = episodeDescription
+        .Replace("?", "?<br>")
+        .Replace(".", ".<br>");
+}
 
+    <p style="text-align: right; direction: RTL;">@Html.Raw(formattedDescription)</p>
     <hr />
 
     @if(otherEpisodes != null){
@@ -105,7 +110,7 @@
     }
 
     .episode-card {
-        background: #222;
+        background: white;
         border-radius: 10px;
         overflow: hidden;
         text-align: center;
@@ -129,8 +134,12 @@
     }
 
     .episode-card h3 {
-        color: white;
+        color: black;
         margin: 10px;
         font-size: 18px;
+    }
+
+    p{
+        color: black;
     }
 </style>

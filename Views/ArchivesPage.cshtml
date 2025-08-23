@@ -1,46 +1,69 @@
 ﻿@using Umbraco.Cms.Web.Common.PublishedModels;
 @inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
+@using System.Linq
+
 @{
 	Layout = "master.cshtml";
 }
 
+
 <link rel="stylesheet" href="/css/ArchivesPageStyle.css"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.css" />
+
 
 @using Umbraco.Cms.Core.Models.Blocks
 
 @{
-    var programs = Model.Value<IEnumerable<BlockListItem>>("programsItems");
+    var programsItems = Model.Value<IEnumerable<BlockListItem>>("programsItems");
+
+    var firstTwoItems = programsItems?.Take(2).ToList() ?? new List<BlockListItem>();
+    var nextThreeItems = programsItems?.Skip(2).Take(3).ToList() ?? new List<BlockListItem>();
+
 }
 
 <h1 class="text-center">ארכיון גל"צ</h1>
 
-<div class="custom-grid">
-    @if (programs != null && programs.Any())
+  <div class="container">
+
+    <!-- שורה ראשונה: שני מלבנים גדולים -->
+    <div class="grid row1">
+    @foreach (var item in firstTwoItems)
     {
-        int index = 0;
-        foreach (var program in programs.Take(5)) // נוודא מקסימום 5
+        var programItem = item.Content.Value<IPublishedContent>("programItem");
+        var image = programItem?.Value<IPublishedContent>("squareImage");
+
+        if (programItem != null && image != null)
         {
-            var item = program.Content;
-            var programItem = item.Value<IPublishedContent>("programItem");
-
-            if (programItem != null && programItem.HasValue("squareImage"))
-            {
-                var image = programItem.Value<IPublishedContent>("squareImage");
-
-                string sizeClass = index < 2 ? "large" : "small";
-                string extraClass = (index >= 2) ? "small-centered" : "";
-
-                <a href="@programItem.Url()" class="card @sizeClass @extraClass">
-                    <img src="@image.Url()" alt="@programItem.Name()" />
-                    <div class="overlay">
-                        <h3>@programItem.Name()</h3>
-                    </div>
-                </a>
-            }
-            index++;
+            <a href="@programItem.Url()" class="card">
+                <div class="card large">
+                    <img src="@image.Url()" alt="img">
+                 </div>
+            </a>
         }
     }
+    </div>
+    
+
+    <!-- שורה שנייה: שלושה מלבנים קטנים -->
+    <div class="grid row2">
+      @foreach (var item in nextThreeItems)
+      {
+        var programItem = item.Content.Value<IPublishedContent>("programItem");
+        var image = programItem?.Value<IPublishedContent>("squareImage");
+
+        if (programItem != null && image != null)
+          {
+            <a href="@programItem.Url()" class="card">
+                <div class="card small">
+                    <img src="@image.Url()" alt="img">
+                </div>
+            </a>
+            }
+     }  
+
+    </div>
 </div>
+
 
 
 
@@ -53,13 +76,12 @@
     var programsMarthon = Model.Value<IEnumerable<BlockListItem>>("marthonItems");
 }
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.css" />
-
 <style>
     .swiper {
     position: relative;
     padding: 20px 60px; /* רווח לוחצים מצדדים */
     height: 300px; /* קבע גובה שיתאים לגובה התמונה + הכותרת */
+    width: 100%;   /* חובה כדי לחשב כמה שקפים נכנסים */
     margin-bottom: 30px;
 }
 
@@ -78,7 +100,7 @@
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.2s ease;
     user-select: none;
-    z-index: 10;
+    z-index: 9999; /* לוודא שהחיצים תמיד מעל התמונות */
 }
 
 .swiper-button-prev:hover,
@@ -87,19 +109,17 @@
     transform: translateY(-50%) scale(1.15);
 }
 
-/* מיקום החיצים בהתאם לכיוון RTL */
-.swiper-button-prev {
-    right: 10px; /* ב-RTL זה החץ אחורה שנמצא בצד ימין */
-}
-
+.swiper-button-prev,
 .swiper-button-next {
-    left: 10px; /* ב-RTL זה החץ קדימה שנמצא בצד שמאל */
+    background-color: rgba(0,0,0,0.25);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
 }
-
 .swiper-button-prev::after,
 .swiper-button-next::after {
-    font-size: 20px;
-    color: white;
+    font-size: 18px;
+    color: #fff;
 }
 
     .swiper-slide a {
@@ -117,6 +137,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    flex-shrink: 0; /* שלא יתכווץ */
 }
 
 .swiper-slide img {
@@ -148,7 +169,7 @@
                 if (programItem != null && programItem.HasValue("squareImage"))
                 {
                     var image = programItem.Value<IPublishedContent>("squareImage");
-                    <div class="swiper-slide" style="position:relative;">
+                    <div class="swiper-slide">
                         <a href="@programItem.Url()" title="@programItem.Name()">
                             <img src="@image.Url()" alt="@programItem.Name()" />
                             <h3>@programItem.Name()</h3>
@@ -159,21 +180,21 @@
         }
     </div>
 
+    <!-- החיצים -->
     <div class="swiper-button-next"></div>
     <div class="swiper-button-prev"></div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.js"></script>
-
 <script>
     const swiper = new Swiper(".mySwiper", {
         slidesPerView: 5,
-        spaceBetween: 10,
-        rtl: true,
+    spaceBetween: 20, // מרווח בין שקפים
         navigation: {
             nextEl: ".swiper-button-next",
             prevEl: ".swiper-button-prev",
         },
         loop: false,
+        // אל תשים rtl:true – זה מתנגש עם dir="rtl"
     });
 </script>
+

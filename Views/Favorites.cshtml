@@ -8,20 +8,25 @@
 body{
     background-color: #BDEAF2;
 }
+
 </style>    
 
 <div class="container mt-5" >
     <h1 class="text-center mb-4" style="font-family: Assistant, Sans-serif; font-size: 57px; font-weight: 500;">תכניות מועדפות</h2>
-    <div class="row" id="favorites-container" style="gap:20px;">
+    <div class="row text-center" id="favorites-container" style="gap:20px;">
     </div>
 </div>
 
 <script>
     const favoritesContainer = document.getElementById("favorites-container");
     const favorites = JSON.parse(localStorage.getItem("favoritePrograms") || "[]");
+    
 
     if (favorites.length === 0) {
-        favoritesContainer.innerHTML = "<p>לא הוספת עדיין תכניות למועדפים.</p>";
+    favoritesContainer.innerHTML = `
+        <h2 class="text-center">עדיין לא נוספו תכניות מועדפות</h2>
+        <br>
+        <h3 class="text-center">על מנת להוסיף תכנית למועדפים, חפשו את כפתור הלב בעמוד התכנית</h3>`;
     } else {
         favorites.forEach(fav => {
             const card = document.createElement("div");

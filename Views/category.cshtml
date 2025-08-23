@@ -59,10 +59,10 @@ else
             var img = program.Value<IPublishedContent>("squareImage");
             var imgUrl = img != null ? img.Url() : "/path/to/placeholder.jpg";
 
-            <div class="program-card">
+            <div class="program-card text-center">
                 <a href="@program.Url()">
                     <img src="@imgUrl" alt="@program.Name" />
-                    <div>@program.Name</div>
+                    <h5>@program.Name</h5>
                 </a>
             </div>
         }

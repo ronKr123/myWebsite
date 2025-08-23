@@ -1,47 +1,72 @@
-
 body {
-
+  display: flex;
   flex-direction: column;
   min-height: 100vh;
+  margin: 0;
 }
 
 main {
-  flex: 1; /* דוחף את ה-footer למטה */
+  flex: 1;
 }
 
+/* Footer */
 .custom-footer {
-  background: linear-gradient(to bottom right, #96b9d6, #6f8eac);
+  background: linear-gradient(135deg, #96b9d6, #6f8eac);
   direction: rtl;
-  font-family: Arial, sans-serif;
-  margin: 0; /* ביטול רווח חיצוני */
-  width: 100%; /* לכל רוחב המסך */
-  padding: 20px; /* ריווח פנימי נעים */
+  font-family: 'Assistant', Arial, sans-serif;
+  padding: 40px 20px 20px 20px;
+  width: 100%;
+  color: #fff;
+  transition: background 0.5s;
 }
 
 .footer-container {
-  max-width: 100%;
-  margin: 0; 
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
+  gap: 30px;
   align-items: flex-start;
 }
 
 .footer-column {
   flex: 1 1 300px;
-  margin: 0; 
+  min-width: 100px;
+}
+
+.footer-logo img {
+  max-width: 150px;
+  margin-bottom: 20px;
+  margin-left: 200px;
+  display: block;
+  transition: transform 0.3s;
+}
+
+.footer-logo img:hover {
+  transform: scale(1.1);
 }
 
 .footer-column h3 {
-  color: #000;
+  color: #ffffff;
   margin-bottom: 15px;
   font-size: 22px;
   font-weight: bold;
+  border-bottom: 2px solid #ffffff66;
+  display: inline-block;
+  padding-bottom: 5px;
+  transition: color 0.3s, transform 0.3s;
+  text-align: center;
 }
 
+.footer-column h3:hover {
+  color: #f4c627;
+  transform: scale(1.05);
+}
+
+/* קישורים בעמודי האתר */
 .footer-links ul {
   list-style: none;
   padding: 0;
+  margin: 0;
 }
 
 .footer-links ul li {
@@ -49,32 +74,82 @@ main {
 }
 
 .footer-links ul li a {
-  color: #000;
-  text-decoration: underline;
+  color: #ffffffdd;
+  text-decoration: none;
   font-size: 18px;
+  transition: all 0.3s ease;
+}
+
+.footer-links ul li a:hover {
+  color: #f4c627;
+  transform: translateX(-5px);
+  text-decoration: underline;
+}
+
+/* אייקוני רשתות חברתיות */
+.footer-social .social-icons {
+  display: flex;
+  gap: 2px;
+  flex-wrap: wrap;
 }
 
 .footer-social .social-icons a img {
-  width: 50px;
-  height: 50px;
-  margin: 0 8px;
+  width: 40px;
+  height: 40px;
+  transition: all 0.3s ease;
 }
 
+.footer-social .social-icons a img:hover {
+  transform: scale(1.15) rotate(10deg);
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
+}
+
+/* כפתורי אפליקציה */
 .footer-apps .app-btn {
   display: block;
   margin: 10px 0;
-  max-width: 200px;
+  max-width: 180px;
+  transition: transform 0.3s, box-shadow 0.3s;
 }
 
-.footer-logo img {
-  max-width: 120px;
-  margin-bottom: 15px;
+.footer-apps .app-btn:hover {
+  transform: scale(1.08) translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
 }
 
-@media (max-width: 768px) {
+/* שורת זכויות יוצרים */
+.footer-bottom {
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
+  margin-top: 30px;
+  padding-top: 15px;
+  text-align: center;
+  transition: color 0.3s;
+}
+
+.footer-bottom p {
+  color: #ffffffcc;
+  font-size: 16px;
+  margin: 0;
+}
+
+.footer-bottom p:hover {
+  color: #ffffff;
+  transform: translateY(-2px);
+}
+
+/* רספונסיביות לניידים */
+@@media (max-width: 768px) {
   .footer-container {
     flex-direction: column;
     align-items: center;
     text-align: center;
+  }
+
+  .footer-logo img {
+    margin: 0 auto 20px auto;
+  }
+
+  .footer-column {
+    align-items: center;
   }
 }

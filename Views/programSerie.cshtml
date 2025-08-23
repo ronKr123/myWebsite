@@ -10,7 +10,14 @@
     var episodes = Model.ChildrenOfType("EpisodePage");
 }
 
-<h1 class="text-center mt-3" style="font-size: 50px;">@Model.Name</h1>
+<div class="program-header">
+    <div class="program-title">
+        <h1 style="direction: rtl;">@Model.Name</h1>
+    </div>
+    <button id="favorite-btn">
+        <i class="fa-regular fa-heart" id="favorite-icon"></i>
+    </button>
+</div>
 
 <section class="program-section">
 
@@ -121,4 +128,66 @@
             font-size: 0.9rem;
         }
     }
+
+    .program-header {
+        position: relative;
+        height: 60px; 
+        margin: 30px;
+    }
+
+    .program-title {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        text-align: center;
+    }
+
+    #favorite-btn {
+        position: absolute;
+        top: 50%;
+        right: 20px;
+        transform: translateY(-50%);
+        font-size: 30px;
+        background: none;
+        border: none;
+        cursor: pointer;
+    }
 </style>
+
+<script>
+    const programId = @Model.Id; 
+    const programName = "@Model.Name";
+    const programImage = "@(Model.Value<IPublishedContent>("squareImage")?.Url() ?? "")";
+    const programUrl = "@Model.Url()";
+
+    let favorites = JSON.parse(localStorage.getItem("favoritePrograms") || "[]");
+
+    const favoriteBtn = document.getElementById("favorite-btn");
+    const favoriteIcon = document.getElementById("favorite-icon");
+
+    if (favorites.find(p => p.id === programId)) {
+        favoriteIcon.classList.remove("fa-regular");
+        favoriteIcon.classList.add("fa-solid");
+    }
+
+    favoriteBtn.addEventListener("click", () => {
+        const index = favorites.findIndex(p => p.id === programId);
+
+        if (index === -1) {
+            favorites.push({ id: programId, name: programName, image: programImage, urlProgram: programUrl });
+            favoriteIcon.classList.remove("fa-regular");
+            favoriteIcon.classList.add("fa-solid");
+        } else {
+            // הסר מהמועדפים
+            favorites.splice(index, 1);
+            favoriteIcon.classList.remove("fa-solid");
+            favoriteIcon.classList.add("fa-regular");
+        }
+
+        localStorage.setItem("favoritePrograms", JSON.stringify(favorites));
+    });
+</script>

@@ -100,7 +100,7 @@
 
 </div> 
 
-<div style="margin:50px;"/>
+<div style="margin:0px;"/>
 
 
 @{
@@ -152,7 +152,7 @@
     background-image: linear-gradient(86deg, #003357 0%, #000914 100%);
     color: white;
     direction: rtl;
-    margin:  -50px -50px -50px -50px;            
+    //margin:  -50px -50px -50px -50px;            
     padding: 50px 0;      
     margin-bottom: 1px;
 }
@@ -230,6 +230,19 @@ a {
 .podcastsClass{
     background-color: white;
 }
+
+footer {
+
+    //margin: 50px -60px -50px 50px ; /* למנוע דחיפות צדדיות */
+    
+
+}
+
+
+
+
+
+
 </style>  
 
 
@@ -261,7 +274,7 @@ a {
                         <a href="@programUrl" class="program-link program-card-image">
                             <img src="@imageUrl" alt="@name" class="program-image" />
                         </a>
-                        <h6 class="program-title" title="@name">@name</h6>
+                        <h6 class="program-title mt-2" title="@name">@name</h6>
                         <p class="program-description">@description</p>
                     </div>
                 }
@@ -277,4 +290,44 @@ a {
 
 @await Html.PartialAsync("transitionProgramTwo")
 
-<div style="height: 50px;" > </div>
+<div style="height: 10px;" > </div>
+
+@{
+    var cultureProgramList = Model.Value<IEnumerable<BlockListItem>>("cultureProgramList");
+}
+
+<section class="podcastsClass">
+    <h1 class="text-center page-title">תרבות ופנאי</h1>
+
+    <div class="row podcast-grid">
+        @if (cultureProgramList != null && cultureProgramList.Any())
+        {
+            foreach (var programBlock in cultureProgramList)
+            {
+                var program = programBlock.Content;
+                var programItem = program.Value<IPublishedContent>("programItem");
+
+                if (programItem != null)
+                {
+                    var image = programItem.Value<IPublishedContent>("squareImage");
+                    var imageUrl = image?.Url() ?? "/path/to/default-image.jpg";
+                    var name = programItem.Value<string>("programName");
+                    var description = programItem.Value<string>("discreption");
+                    var programUrl = programItem.Url();
+
+                    <div class="col-6 col-md-4 col-lg-3 mb-5">
+                        <a href="@programUrl" class="program-link program-card-image">
+                            <img src="@imageUrl" alt="@name" class="program-image" />
+                        </a>
+                        <h6 class="program-title mt-2" title="@name">@name</h6>
+                        <p class="program-description">@description</p>
+                    </div>
+                }
+            }
+        }
+        else
+        {
+            <p class="text-center text-muted">אין תכניות להצגה.</p>
+        }
+    </div>
+</section>
