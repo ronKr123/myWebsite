@@ -574,6 +574,15 @@
         });
     });
 
+    window.addEventListener('pageshow', (event) => {
+    if (event.persisted) {
+        // איפוס הנגן אם הדף נטען מה-cache של הדפדפן
+        stopAudio();
+        floatingPlayer.style.display = 'none';
+    }
+});
+
+
 </script>
 
 <style>
@@ -687,7 +696,7 @@
         font-size: 60px;
         color: white;
         cursor: pointer;
-        opacity: 0.8;
+        opacity: 0.9;
         transition: opacity 0.3s;
     }
 </style>

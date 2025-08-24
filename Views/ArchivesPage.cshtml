@@ -6,7 +6,7 @@
 	Layout = "master.cshtml";
 }
 
-
+<script src="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.js"></script>
 <link rel="stylesheet" href="/css/ArchivesPageStyle.css"/>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.css" />
 
@@ -155,6 +155,70 @@
         color: #222;
         user-select: none;
     }
+
+    
+
+    .sectionPrograms {
+    display: flex;
+    flex-direction: column; /* כדי שהגריד והכפתור יהיו אחד מתחת לשני */
+    justify-content: center;
+    align-items: center;
+    font-family: Arial, sans-serif;
+  }
+
+  .grid-container {
+    display: grid;
+    grid-template-columns: repeat(4, 320px);
+    grid-template-rows: repeat(2, 230px);
+    gap: 20px;
+    margin-bottom: 40px; /* מרווח בין הגריד לכפתור */
+  }
+
+  .box {
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.3s, filter 0.3s;
+  }
+
+  .box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.3s, filter 0.3s;
+  }
+
+  .box:hover img {
+    transform: scale(1.1);
+    filter: brightness(0.8) contrast(1.2);
+  }
+
+  /* סגנון לכפתור */
+  .btn {
+    padding: 15px 30px;
+    background: linear-gradient(90deg, #4a90e2, #0078d7);
+    color: white;
+    text-decoration: none;
+    font-size: 20px;
+    font-weight: bold;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    transition: transform 0.2s, box-shadow 0.2s;
+    margin-bottom: 30px;
+  }
+
+  .btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+  }
+
+  .btn:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  }
 </style>
 
 <div class="swiper mySwiper" dir="rtl">
@@ -194,7 +258,31 @@
             prevEl: ".swiper-button-prev",
         },
         loop: false,
-        // אל תשים rtl:true – זה מתנגש עם dir="rtl"
     });
 </script>
+
+@{
+    var programsSection = Model.Value<IEnumerable<BlockListItem>>("programsSectionItems");
+}
+
+<div class="sectionPrograms" >
+  <h1 class="text-center mb-4">תכניות מן העבר</h1>  
+  <div class="grid-container">
+    @foreach(var program in programsSection){
+        var programSectionItem = program.Content.Value<IPublishedContent>("programItem");
+        var imageProgram = programSectionItem?.Value<IPublishedContent>("squareImage");
+
+        if (programSectionItem != null && imageProgram != null)
+        {
+            <a href="@programSectionItem.Url()">
+                <div class="box">
+                    <img src="@imageProgram.Url()" alt="img">
+                 </div>
+            </a>
+        }
+    }
+  </div>
+
+  <a href="/קטגוריות/ארכיון/" class="btn">← לתכניות נוספות לחצו כאן</a>
+</div>
 
