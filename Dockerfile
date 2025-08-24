@@ -8,6 +8,10 @@ RUN dotnet publish -c Release -o /app
 FROM mcr.microsoft.com/dotnet/aspnet:9.0
 WORKDIR /app
 COPY --from=build /app .
+
+# צור תיקיית media אם לא קיימת
+RUN mkdir -p wwwroot/media
+
 ENV ASPNETCORE_URLS=http://+:10000
 EXPOSE 10000
 CMD ["dotnet", "myWebsite.dll"]
