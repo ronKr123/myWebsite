@@ -9,6 +9,7 @@
   <ItemGroup>
     <PackageReference Include="System.ServiceModel.Syndication" Version="9.0.8" />
     <PackageReference Include="Umbraco.Cms" Version="16.0.0" />
+    <Content Include="wwwroot\media\**\*.*" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
 
   <ItemGroup>
