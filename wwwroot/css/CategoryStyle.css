@@ -1,5 +1,5 @@
 body {
-    background-color: lightblue;
+    background-color: #e6f0fa;
     margin: 0;
     padding: 0;
     height: 100vh;
@@ -15,7 +15,7 @@ body {
     }
 
     .program-card img {
-        width: 370px;
+        width: 350px;
         height: 100%;
         object-fit: cover;
         border-radius: 6px;

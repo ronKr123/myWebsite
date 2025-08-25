@@ -1,42 +1,28 @@
-# ===========================
-# Build stage
-# ===========================
+# שלב Build
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
 
 # העתק את כל הקבצים
 COPY . .
 
-# publish האתר ל־Release
+# שחזור חבילות והידור
+RUN dotnet restore
 RUN dotnet publish -c Release -o /app
 
-# ===========================
-# Runtime stage
-# ===========================
-FROM mcr.microsoft.com/dotnet/aspnet:9.0
+# שלב Runtime
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS runtime
 WORKDIR /app
 
-# העתק את הקבצים מה־build
-COPY --from=build /app .
+# העתק את התוצאה
+COPY --from=build /app ./
 
-# צור תיקיות חשובות
-RUN mkdir -p wwwroot/media
-RUN mkdir -p App_Data
+# קובץ SQLite נשמר בתקיית Data בתוך ה־publish
+# דאג שהקובץ Umbraco.sqlite.db ייכנס ל־git (או תעתיק אותו ל־/umbraco/Data)
+# אחרת Render יריץ את האתר בלי DB
 
-# העתק את קובץ ה‑SQLite הקיים
-COPY umbraco/Data/Umbraco.sqlite.db App_Data/Umbraco.sqlite.db
+# Render מגדיר את ה־PORT
+ENV ASPNETCORE_URLS=http://*:$PORT
 
-# העתק מדיה אם יש קבצים קיימים
-COPY wwwroot/media wwwroot/media
+EXPOSE 8080
 
-# הגדר Environment Variables
-ENV ASPNETCORE_ENVIRONMENT=Production
-ENV ASPNETCORE_URLS=http://+:10000
-# Connection string ל‑SQLite
-ENV ConnectionStrings__umbracoDbDSN="Data Source=App_Data/Umbraco.sqlite.db;"
-
-# חשיפת הפורט ש‑Render מאזין עליו
-EXPOSE 10000
-
-# הפקודה שמריצה את האתר
-CMD ["dotnet", "myWebsite.dll"]
+ENTRYPOINT ["dotnet", "myWebsite.dll"]

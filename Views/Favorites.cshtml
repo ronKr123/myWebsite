@@ -5,56 +5,89 @@
 }
 
 <style>
-body{
-    background-color: #BDEAF2;
+body {
+    background-image: url('/media/oqbnvw4h/backimg.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-attachment: fixed;
 }
 
+.card-img-top {
+    width: 100%;
+    max-width: 100%;
+    height: 250px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.remove-btn {
+    display: inline-block;
+    color: #ff4d4d;
+    font-size: 35px;
+    margin-top: 10px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.remove-btn:hover {
+    transform: scale(1.2);
+}
 </style>    
 
-<div class="container mt-5" >
-    <h1 class="text-center mb-4" style="font-family: Assistant, Sans-serif; font-size: 57px; font-weight: 500;">תכניות מועדפות</h2>
-    <div class="row text-center" id="favorites-container" style="gap:20px;">
+<h1 class="text-center mt-3">תכניות מועדפות</h1>
+
+<div class="container mt-5">
+    <div class="row text-center g-3" id="favorites-container">
     </div>
 </div>
 
 <script>
-    const favoritesContainer = document.getElementById("favorites-container");
-    const favorites = JSON.parse(localStorage.getItem("favoritePrograms") || "[]");
-    
+const favoritesContainer = document.getElementById("favorites-container");
+const favorites = JSON.parse(localStorage.getItem("favoritePrograms") || "[]");
 
+function renderFavorites() {
+    favoritesContainer.innerHTML = "";
     if (favorites.length === 0) {
-    favoritesContainer.innerHTML = `
-        <h2 class="text-center">עדיין לא נוספו תכניות מועדפות</h2>
-        <br>
-        <h3 class="text-center">על מנת להוסיף תכנית למועדפים, חפשו את כפתור הלב בעמוד התכנית</h3>`;
+        favoritesContainer.innerHTML = `
+            <h2 class="text-center">עדיין לא נוספו תכניות מועדפות</h2>
+            <br>
+            <h3 class="text-center">על מנת להוסיף תכנית למועדפים, חפשו את כפתור הלב בעמוד התכנית</h3>
+        `;
     } else {
         favorites.forEach(fav => {
             const card = document.createElement("div");
-            card.classList.add("col-md-3");
+            card.classList.add("col-lg-3", "col-md-6", "col-sm-12");
             card.innerHTML = `
-                <div class="card" style="width:100%; margin-bottom:20px;">
-                    <img src="${fav.image}" class="card-img-top" alt="${fav.name}">
-                    <div class="card-body">
-                        <h5 class="card-title">${fav.name}</h5>
-                        <a href="${fav.urlProgram}" class="btn btn-primary">צפה בתכנית</a>
-                        <button class="btn btn-danger remove-btn" data-id="${fav.id}">הסר</button>
+                <div style="width:100%; margin-bottom:20px;">
+                    <a href="${fav.urlProgram}">
+                        <img src="${fav.image}" class="card-img-top" alt="${fav.name}">
+                    </a>
+                    <h4 class="text-center mt-2">${fav.name}</h4>
+                    <div class="text-center">
+                        <span class="remove-btn" data-id="${fav.id}" title="הסר מהמועדפים">
+                            <i class="fa-solid fa-heart"></i>
+                        </span>
                     </div>
                 </div>
             `;
             favoritesContainer.appendChild(card);
         });
 
-        // הסרת מועדפים מהעמוד
+        // הסרת מועדפים
         document.querySelectorAll(".remove-btn").forEach(btn => {
-            btn.addEventListener("click", (e) => {
-                const id = parseInt(e.target.getAttribute("data-id"));
+            btn.addEventListener("click", () => {
+                const id = parseInt(btn.getAttribute("data-id"));
                 const index = favorites.findIndex(f => f.id === id);
                 if (index !== -1) {
                     favorites.splice(index, 1);
                     localStorage.setItem("favoritePrograms", JSON.stringify(favorites));
-                    e.target.closest(".col-md-3").remove();
+                    renderFavorites();
                 }
             });
         });
     }
+}
+
+renderFavorites();
 </script>

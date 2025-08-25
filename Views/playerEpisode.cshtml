@@ -329,11 +329,12 @@
 
     <!-- @if (!string.IsNullOrEmpty(episode.AudioUrl))
     {
-        <audio controls style="margin-top: 20px; width: 100%;">
-            <source src="@episode.AudioUrl" type="audio/mpeg" />
-            הדפדפן שלך לא תומך בהשמעת אודיו.
-        </audio>
-    } -->
+            <audio controls style="margin-top: 20px; width: 100%;">
+                <source src="@episode.AudioUrl" type="audio/mpeg" />
+                הדפדפן שלך לא תומך בהשמעת אודיו.
+            </audio>
+    }
+ -->
 
     <div class="nav-buttons">
         @if (previousEpisode != null)
@@ -361,17 +362,17 @@
         ? date.ToString("dd.MM.yy")
         : ep.PubDate;
 
-                <div class="episode-card">
-                    @if (!string.IsNullOrEmpty(ep.Image))
-                    {
-                            <img src="@ep.Image" alt="@ep.Title" />
-                    }
-                    <h4 style="text-align:right;">@ep.Title</h4>
-                    <h5 style="text-align:right;">@pubDate</h5>
-                    <a href="javascript:void(0);" class="play-button" data-audio="@ep.AudioUrl" data-title="@ep.Title">
-                        <i class="fa-solid fa-play-circle"></i>
-                    </a>
-                </div>
+                    <div class="episode-card">
+                        @if (!string.IsNullOrEmpty(ep.Image))
+                        {
+                                    <img src="@ep.Image" alt="@ep.Title" />
+                        }
+                        <h4 style="text-align:right;">@ep.Title</h4>
+                        <h5 style="text-align:right;">@pubDate</h5>
+                        <a href="javascript:void(0);" class="play-button" data-audio="@ep.AudioUrl" data-title="@ep.Title">
+                            <i class="fa-solid fa-play-circle"></i>
+                        </a>
+                    </div>
 }
     </div>
 </div> -->
@@ -575,12 +576,12 @@
     });
 
     window.addEventListener('pageshow', (event) => {
-    if (event.persisted) {
-        // איפוס הנגן אם הדף נטען מה-cache של הדפדפן
-        stopAudio();
-        floatingPlayer.style.display = 'none';
-    }
-});
+        if (event.persisted) {
+            // איפוס הנגן אם הדף נטען מה-cache של הדפדפן
+            stopAudio();
+            floatingPlayer.style.display = 'none';
+        }
+    });
 
 
 </script>
@@ -700,5 +701,3 @@
         transition: opacity 0.3s;
     }
 </style>
-
-

@@ -1,5 +1,10 @@
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
+// לוודא ש-Umbraco מאזין ל-Port שסביבת Render מספקת
+var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+builder.WebHost.UseUrls($"http://*:{port}");
+
+
 builder.CreateUmbracoBuilder()
     .AddBackOffice()
     .AddWebsite()
